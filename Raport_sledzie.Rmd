@@ -1,0 +1,29 @@
+---
+title: "Raport śledzi"
+author: "Adam Chojan"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    css: custom.css
+    keep_md: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE,  echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message=FALSE)
+```
+
+
+#Wprowadzenie
+Tu będzie krótki opis
+
+##Coś
+
+###Cos2
+
+#Wykorzystane biblioteki
+```{r library, echo=TRUE}
+library(knitr)
+```
