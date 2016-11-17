@@ -125,28 +125,28 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#wprowadzenie"><span class="toc-section-number">1</span> Wprowadzenie</a><ul>
-<li><a href="#cos"><span class="toc-section-number">1.1</span> Coś</a><ul>
-<li><a href="#cos2"><span class="toc-section-number">1.1.1</span> Cos2</a></li>
-</ul></li>
-</ul></li>
+<li><a href="#wprowadzenie"><span class="toc-section-number">1</span> Wprowadzenie</a></li>
 <li><a href="#wykorzystane-biblioteki"><span class="toc-section-number">2</span> Wykorzystane biblioteki</a></li>
+<li><a href="#wczytanie-danych"><span class="toc-section-number">3</span> Wczytanie danych</a></li>
 </ul>
 </div>
 
 <div id="wprowadzenie" class="section level1">
 <h1><span class="header-section-number">1</span> Wprowadzenie</h1>
 <p>Tu będzie krótki opis</p>
-<div id="cos" class="section level2">
-<h2><span class="header-section-number">1.1</span> Coś</h2>
-<div id="cos2" class="section level3">
-<h3><span class="header-section-number">1.1.1</span> Cos2</h3>
-</div>
-</div>
 </div>
 <div id="wykorzystane-biblioteki" class="section level1">
 <h1><span class="header-section-number">2</span> Wykorzystane biblioteki</h1>
 <pre class="r"><code>library(knitr)</code></pre>
+</div>
+<div id="wczytanie-danych" class="section level1">
+<h1><span class="header-section-number">3</span> Wczytanie danych</h1>
+<pre class="r"><code>url &lt;- &quot;http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv&quot;
+destfile &lt;- &quot;sledzie.csv&quot;
+download.file(url, destfile, mode=&quot;wb&quot;)</code></pre>
+<pre><code>## Warning in download.file(url, destfile, mode = &quot;wb&quot;): pobrana długość
+## 3055616 != zgłoszona długość 6576108</code></pre>
+<pre class="r"><code>mydata = read.csv(&quot;sledzie.csv&quot;)</code></pre>
 </div>
 
 

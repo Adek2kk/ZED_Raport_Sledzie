@@ -17,6 +17,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Cache dir
+Raport_sledzie_cache/
+
 # =========================
 # Operating System Files
 # =========================
