@@ -18,19 +18,34 @@ knitr::opts_chunk$set(echo = FALSE,message=FALSE)
 #Wprowadzenie
 Tu będzie krótki opis
 
+#Init
 
-#Wykorzystane biblioteki
+##Wykorzystane biblioteki
 ```{r library, echo=TRUE}
 library(knitr)
+library(dplyr)
+library(ggplot2)
 ```
 
-#Wczytanie danych
-```{r download_file, echo=TRUE, cache = TRUE}
-url <- "http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv"
-destfile <- "sledzie.csv"
-download.file(url, destfile, mode="wb")
-```
+##Wczytanie danych
 
 ```{r load_file, echo=TRUE,message=FALSE, cache = TRUE}
 mydata = read.csv("sledzie.csv")
+df <- data.frame(mydata)
+my_df <- tbl_df(df)
+```
+
+#Wstępne rozpoznanie
+##Ogólne statystyki dla danych
+```{r introduction}
+kable(summary(my_df))
+
+kable(head(my_df))
+```
+
+##Zmiana długości śledzi w czasie
+```{r plot_sledzie_time}
+plot <- ggplot(my_df,aes(seq(1:length(length)),length)) + stat_smooth(method="lm") + stat_smooth(method="gam")
+plot<- plot + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + xlab("Czas") + ylab("Długość śledzia")
+plot
 ```
