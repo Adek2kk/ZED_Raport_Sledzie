@@ -58,13 +58,13 @@ Pierwszym krokiem jest sprawdzenie jaka jest liczba unikalnych wartości
 
 
 ```{r missing_valeues_uniq, message=FALSE}
-uniq_mv <- my_df %>% select(cfin1:lcop2) %>% summarise_each(funs(n_distinct(., na.rm = TRUE)))
+uniq_mv <- my_df %>% select(cfin1:lcop2,sst) %>% summarise_each(funs(n_distinct(., na.rm = TRUE)))
 kable(uniq_mv, caption = "Tabela unikalnych wartości")
 ```
 
 ```{r missing_valeues_pattern, message=FALSE}
 
-only_missing_col <- select(my_df,cfin1:lcop2)
+only_missing_col <- select(my_df,cfin1:lcop2,sst)
 missing_pattern <- tbl_df(md.pattern(only_missing_col))
 missing_pattern2 <- select(missing_pattern,cfin2:lcop1)
 missing_pattern2[missing_pattern2==0]<-NA
@@ -83,6 +83,15 @@ plot_mv_count <- ggplot(mv_count,aes(x=variable,y=value, fill=variable))+geom_ba
                     theme_minimal() + theme(legend.position="none")
 plot_mv_count
 ```
+
+
+```{r missing_fill}
+tempData <- mice(only_missing_col,m=5,maxit=5,meth='pmm',seed=500)
+
+
+```
+
+
 
 
 ##Zmiana długości śledzi w czasie
