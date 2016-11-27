@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = FALSE,message=FALSE)
 Tu będzie krótki opis
 
 #Biblioteki
-```{r library, echo=TRUE,message=FALSE}
+```{r library, echo=TRUE,message=FALSE, warnings = FALSE}
 library(knitr)
 library(dplyr)
 library(ggplot2)
@@ -42,7 +42,7 @@ normalit <- function(x){
 ##Wczytanie danych
 Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Po wczytaniu dokonanu również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
 
-Dane zostały pobrane ze strony: http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv
+Dane zostały pobrane ze strony: (http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv)
 ```{r load_file, echo=TRUE,message=FALSE, cache = TRUE}
 mydata = read.csv("sledzie.csv")
 df <- data.frame(mydata)
@@ -117,8 +117,10 @@ kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieni
 ```
 
 
+#Analiza atrybutów
+Zestaw danych zawiera 15 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
-#Zmiana długości śledzi w czasie
+##Długość śledzia
 
 Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śledzia zwiekszała się do na przestrzenia lat do próbki eksperymentu ok. 15 tysięcy. Następnie widać stopniowy spadek długości śledzia, aż do końca zebranych danych.
 ```{r plot_sledzie_time,  cache=TRUE}
@@ -131,55 +133,140 @@ plot_length_hex <- plot_length_hex + theme(axis.text.x=element_blank(),axis.tick
 ggplotly(plot_length_hex)
 ```
 
-#Analiza atrybutów
-wykresy z tekstem
 
-```{r nor_data}
+##Parametry morza
 
-nor_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,cfin1 = normalit(cfin1),cfin2 = normalit(cfin2),chel1 = normalit(chel1),chel2 = normalit(chel2),lcop1 = normalit(lcop1),lcop2 = normalit(lcop2))
-distinct(nor_plank)
-
+###Temperatura przy powierzchni wody 
+```{r nor_temp, echo=TRUE}
+df_norm_temp <- new_my_df %>% select(X,length,xmonth,sst)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,sst = normalit(sst))
 ```
-##Natężenie połowow
 
-##Roczny narybek
+```{r polt_temp_sst}
+plot_temp <- ggplot(df_norm_temp,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+
+  geom_smooth(aes(y=sst,colour = "temperatura trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Temperatura / Długość śledzia") + ggtitle("Wykres temperatury przy powierzchni wody od czasu") 
+plot_temp
+```
 
-##Łączne roczne natężenie połowów w regionie 
+###Poziom zasolenia wody
+```{r nor_salt, echo=TRUE}
+df_salt <- new_my_df %>% select(X,length,xmonth,sal)
+```
 
-##Łączna liczba ryb złowionych w ramach połowu
+```{r polt_salt_sal}
+plot_sal <- ggplot(df_salt,aes(X)) +  geom_point(aes(y = sal,colour="zasolenie"), size=0.7) +
+  geom_smooth(aes(y=sal,colour = "zasolenie trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres zasolenia wody od czasu") 
+plot_sal
+```
 
-##Temperatura przy powierzchni wody 
+###Oscylacja północnoatlantycka
+```{r nor_nao, echo=TRUE}
+df_norm_nao <- new_my_df %>% select(X,length,xmonth,nao)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,nao = normalit(nao))
+```
 
-##Poziom zasolenia wody
+```{r polt_nao_nao}
+plot_nao <- ggplot(df_norm_nao,aes(X)) +  geom_point(aes(y = nao,colour="nao"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+
+  geom_smooth(aes(y=nao,colour = "nao trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "NAO / Długość śledzia") + ggtitle("Wykres NAO od czasu") 
+plot_nao
+```
 
-##Oscylacja północnoatlantycka
+##Połowy
+
+###Natężenie połowów
+
+```{r polt_catch}
+plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="zasolenie"), size=0.7) +
+  geom_smooth(aes(y=fbar,colour = "zasolenie trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres fbar od czasu") 
+plot_catch
+```
+
+###Łączna liczba ryb złowionych w ramach połowu
+
+```{r polt_totaln}
+plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="zasolenie"), size=0.7) +
+  geom_smooth(aes(y=totaln,colour = "zasolenie trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres totaln od czasu") 
+plot_totaln
+```
+
+###Łączne roczne natężenie połowów w regionie 
+
+```{r polt_catch_year}
+plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="zasolenie"), size=1) +
+  geom_smooth(aes(y=cumf,colour = "zasolenie trend"),method="auto",size=1.7)+
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres  cumf  czasu") 
+plot_catch
+```
+
+
+###Roczny narybek
+
+```{r polt_fry_year}
+plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="zasolenie"), size=1) +
+  geom_smooth(aes(y=recr,colour = "zasolenie trend"),method="auto",size=1.7)+
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres recr od czasu") 
+plot_fry
+```
+
 
 ##Dostepność planktonu
-Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Wykresy te podzielono na  poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Dodatkowo dodano linię trendu długości śledzia. Dane zostąły znormalizowane w przedziale wartości [0;1].
+Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Wykresy te podzielono na  poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Dodatkowo dodano linię trendu długości śledzia. 
 
+Przed wykonaniem wykresów dokonano normalizacjo danych w przedziale [0:1] w celu ujednoliceniu wartości i ułatwieniu porównania danych.
+```{r nor_plank, echo=TRUE}
 
+df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,cfin1 = normalit(cfin1),cfin2 = normalit(cfin2),chel1 = normalit(chel1),chel2 = normalit(chel2),lcop1 = normalit(lcop1),lcop2 = normalit(lcop2))
+
+```
 
 ###Calanus finmarchicus gat. 1
 
 ```{r polt_plank_cfin1}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu") 
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
+  geom_smooth(aes(y=cfin1,colour = "plankton trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu") 
 plot_plank
 ```
 
 ###Calanus finmarchicus gat. 2
 
 ```{r polt_plank_cfin2}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
+  geom_smooth(aes(y=cfin2,colour = "plankton trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
 
 ###Calanus helgolandicus gat. 1
 
 ```{r polt_plank_chel1}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
+  geom_smooth(aes(y=chel1,colour = "plankton trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
 
@@ -187,24 +274,33 @@ plot_plank
 
 
 ```{r polt_plank_chel2}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
+  geom_smooth(aes(y=chel2,colour = "plankton trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  +
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
 
 ###Widłonogi gat. 1
 
 ```{r polt_plank_lcop1}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
+  geom_smooth(aes(y=lcop1,colour = "plankton trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
 
 ###Widłonogi gat. 2
 
 ```{r polt_plank_lcop2}
-plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
-theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) +
+  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+  geom_smooth(aes(y=lcop2,colour = "plankton trend"),method="auto",size=1.7)+
+  theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
+  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
 
@@ -213,12 +309,16 @@ plot_plank
 
 
 #Korelacja między zmiennymi
+bedzie korelacja TODO
 obliczenie korelacji + wykresy
-
+```{r correlation}
+#cor(df_norm_plank, use="complete.obs", method="kendall")
+```
 #Regresor przewidujący rozmiar śledzia
-bedzie regresor
+bedzie regresor TODO
 
 #Ważność atrybutów w oparciu o regresor
+bedzie waznosc TODO
 
 #Podsumowanie
-
+bedzie podsumowanie TODO
