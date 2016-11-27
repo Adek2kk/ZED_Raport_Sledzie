@@ -18,16 +18,16 @@ knitr::opts_chunk$set(echo = FALSE,message=FALSE)
 #Wprowadzenie
 Tu będzie krótki opis
 
-#Init
-
-##Wykorzystane biblioteki
-```{r library, echo=TRUE}
+#Biblioteki
+```{r library, echo=TRUE,message=FALSE}
 library(knitr)
 library(dplyr)
 library(ggplot2)
+library(hexbin)
 library(plotly)
 library(reshape2)
 library(mice)
+library(tidyr)
 ```
 
 ##Wczytanie danych
@@ -62,7 +62,7 @@ uniq_mv <- my_df %>% select(cfin1:lcop2,sst) %>% summarise_each(funs(n_distinct(
 kable(uniq_mv, caption = "Tabela unikalnych wartości")
 ```
 
-```{r missing_valeues_pattern, message=FALSE}
+```{r missing_valeues_pattern, message=FALSE, cache=TRUE}
 
 only_missing_col <- select(my_df,cfin1:lcop2,sst)
 missing_pattern <- tbl_df(md.pattern(only_missing_col))
@@ -84,19 +84,38 @@ plot_mv_count <- ggplot(mv_count,aes(x=variable,y=value, fill=variable))+geom_ba
 plot_mv_count
 ```
 
+###Wypełnienie brakujących wartości
 
-```{r missing_fill}
-tempData <- mice(only_missing_col,m=5,maxit=5,meth='pmm',seed=500)
+```{r missing_fill,echo=TRUE}
+new_my_df<-my_df %>% fill(cfin1:lcop2,sst,.direction = "up") %>% fill(cfin1:lcop2,sst,.direction = "down")
 
+kable(summary(new_my_df))
 
 ```
 
 
 
+#Zmiana długości śledzi w czasie
 
-##Zmiana długości śledzi w czasie
-```{r plot_sledzie_time}
-plot <- ggplot(my_df,aes(seq(1:length(length)),length)) + stat_smooth(method="lm") + stat_smooth(method="gam")
-plot<- plot + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + xlab("Czas") + ylab("Długość śledzia") + theme_minimal() 
-ggplotly(plot)
+```{r plot_sledzie_time,  cache=TRUE}
+plot_length <- ggplot(new_my_df,aes(X,length))  + geom_line(alpha=0.3) + stat_smooth(method="auto",size = 2)
+plot_length <- plot_length + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + xlab("Czas") + ylab("Długość śledzia") + theme_minimal() 
+plot_length
+
+plot_length_hex <- ggplot(new_my_df,aes(X,length)) +geom_hex()
+plot_length_hex <- plot_length_hex + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + xlab("Czas") + ylab("Długość śledzia") + theme_minimal() 
+ggplotly(plot_length_hex)
 ```
+
+#Analiza atrybutóW
+wykresy z tekstem
+
+#Korelacja między zmiennymi
+obliczenie korelacji + wykresy
+
+#Regresor przewidujący rozmiar śledzia
+bedzie regresor
+
+#Ważność atrybutów w opataciu o regresor
+
+
