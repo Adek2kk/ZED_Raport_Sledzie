@@ -30,8 +30,19 @@ library(mice)
 library(tidyr)
 ```
 
-##Wczytanie danych
+```{r help_function}
 
+normalit <- function(x){
+  as.double(x)/max(as.double(x))
+}
+
+
+```
+
+##Wczytanie danych
+Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Po wczytaniu dokonanu również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
+
+Dane zostały pobrane ze strony: http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv
 ```{r load_file, echo=TRUE,message=FALSE, cache = TRUE}
 mydata = read.csv("sledzie.csv")
 df <- data.frame(mydata)
@@ -41,6 +52,7 @@ my_df <- tbl_df(df)
 
 #Wstępne rozpoznanie
 ##Ogólne statystyki dla danych
+Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi.
 ```{r introduction}
 kable(summary(my_df), caption = "Tabela podsumująca zbiór danych")
 
@@ -51,17 +63,17 @@ kable(uniq, caption = "Tabela unikalnych wartości")
 ```
 
 ##Wartości brakujące
-Z ogólnych statystyk dla danych dotyczących śledzi można odczytać 6 kolumn, które zawierają wartości brakujące. Ten rozdział raportu będzie poświęcony analizie tych wartości na podstawie, której zostanie podjęta decyzja w jaki sposób zostanie rozwiązany problem - zostawić brakujące wartości, usunąć wiersze z brakującymi wartościami lub wypełnić luki w danych.
+Z ogólnych statystyk dla danych dotyczących śledzi można odczytać 7 kolumn, które zawierają wartości brakujące. Ten rozdział raportu będzie poświęcony analizie tych wartości na podstawie, której zostanie podjęta decyzja w jaki sposób zostanie rozwiązany problem - zostawić brakujące wartości, usunąć wiersze z brakującymi wartościami lub wypełnić luki w danych.
 
 ###Analiza wartości brakujących
-Pierwszym krokiem jest sprawdzenie jaka jest liczba unikalnych wartości
-
+Pierwszym krokiem jest sprawdzenie jaka jest liczba unikalnych wartości dla poszczególnych atrybutów. W poniższej tabeli możemy zaobserwoać niewielką liczbę wartości różnych wartości dla zmiennych posiadających wartości brakujące. Zestaw danych posiada ponad 52 tysiące wiersze, dlatego zmienność danych jest w tych kolumnach nie wielka.
 
 ```{r missing_valeues_uniq, message=FALSE}
 uniq_mv <- my_df %>% select(cfin1:lcop2,sst) %>% summarise_each(funs(n_distinct(., na.rm = TRUE)))
 kable(uniq_mv, caption = "Tabela unikalnych wartości")
 ```
 
+Następnie dokonano próby poszukania wzorcóW na podstawie ktorych można, by zdefiniwać zależności między brakami wartości, a atrybutami. Uzyskany jednak poniższy wykres ukazuję dużę liczbę kombinacji brakujących wartości (53). Są to pojedyncze, podWójne i potrójne braki w wierszu.  
 ```{r missing_valeues_pattern, message=FALSE, cache=TRUE}
 
 only_missing_col <- select(my_df,cfin1:lcop2,sst)
@@ -76,30 +88,42 @@ missing_pattern2[-nrow(missing_pattern2),] %>% is.na %>% melt %>% ggplot(data = 
     labs(x = "Zmienne z brakującymi wartościami", y="Wzorce brakujących wartości") + 
     ggtitle("Wykres wzorców brakujących wartości")
 
+```
+
+
+Wykonano również wykres przedstawiający liczbę brakujących wartości dla każdego atrybutu. Są one jednak bardzo zbliżonę i w tym wypadku nie można wskazać atrybutu wyróżniającego się.
+```{r missing_value_plot}
 mv_count <- melt(data= missing_pattern2[nrow(missing_pattern2),],)
 plot_mv_count <- ggplot(mv_count,aes(x=variable,y=value, fill=variable))+geom_bar(stat="identity") + 
                     labs(x = "Zmienne z brakującymi wartościami", y="Liczba brakujących wartości") + 
-                    ggtitle("Wykres wzorców brakujących wartości") + 
+                    ggtitle("Wykres liczby brakujących wartości") + 
                     theme_minimal() + theme(legend.position="none")
 plot_mv_count
 ```
 
+Ostatnim podejściem było obejrzenie danych źródłowych. Kolejne wiersze są zgrupowane  do pojedynczego połowu w pojedyncze połowy, w których jedyną różnicą są długości śledzi. Braki te występują bardzo często w środku takich bloków.
+
 ###Wypełnienie brakujących wartości
+Na podstawie analizy trudno uzyskać jednoznaczny wzorzec brakujących wartości. Dane brakująće dotyczą poziomu planktonu oraz temperatury przy powierzchni wody. Nie są to atrybuuty o dużej zmienności. Próba wstawienia średniej, mediany lub innej wartości statystycznej może spowowdować duże zniekształcenie danych. Występowanie blokóW takich samych danych w zestawie jak i nie wielka liczba brakujących danych w stosunku do całości zbioru skłoniła do pobierania najbliższej wartości nie brakującej w kierunku do góry i wstawienie jej w puste miejsce. Dodatkowo w pierwszym wierszu występuje również pusta wartość, dlatego powtórzono operacje wstawiania w kierunku dolnym. Poniżej znajduję się kod wypelniający brakujące wartości.
 
 ```{r missing_fill,echo=TRUE}
 new_my_df<-my_df %>% fill(cfin1:lcop2,sst,.direction = "up") %>% fill(cfin1:lcop2,sst,.direction = "down")
+```
 
-kable(summary(new_my_df))
+Przyjęta metoda nie zaburzyła w widoczny sposób podstawowych statystyk widocznych w poniższej tabli w stosunku do tabeli znajdującej się w sekcji 3.1.
 
+```{r missing_fill_new_summary}
+kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieniu brakujących wartości"))
 ```
 
 
 
 #Zmiana długości śledzi w czasie
 
+Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śledzia zwiekszała się do na przestrzenia lat do próbki eksperymentu ok. 15 tysięcy. Następnie widać stopniowy spadek długości śledzia, aż do końca zebranych danych.
 ```{r plot_sledzie_time,  cache=TRUE}
 plot_length <- ggplot(new_my_df,aes(X,length))  + geom_line(alpha=0.3) + stat_smooth(method="auto",size = 2)
-plot_length <- plot_length + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + xlab("Czas") + ylab("Długość śledzia") + theme_minimal() 
+plot_length <- plot_length + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + labs(x="Czas", y="Długość śledzia") + theme_minimal() 
 plot_length
 
 plot_length_hex <- ggplot(new_my_df,aes(X,length)) +geom_hex()
@@ -107,8 +131,86 @@ plot_length_hex <- plot_length_hex + theme(axis.text.x=element_blank(),axis.tick
 ggplotly(plot_length_hex)
 ```
 
-#Analiza atrybutóW
+#Analiza atrybutów
 wykresy z tekstem
+
+```{r nor_data}
+
+nor_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,cfin1 = normalit(cfin1),cfin2 = normalit(cfin2),chel1 = normalit(chel1),chel2 = normalit(chel2),lcop1 = normalit(lcop1),lcop2 = normalit(lcop2))
+distinct(nor_plank)
+
+```
+##Natężenie połowow
+
+##Roczny narybek
+
+##Łączne roczne natężenie połowów w regionie 
+
+##Łączna liczba ryb złowionych w ramach połowu
+
+##Temperatura przy powierzchni wody 
+
+##Poziom zasolenia wody
+
+##Oscylacja północnoatlantycka
+
+##Dostepność planktonu
+Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Wykresy te podzielono na  poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Dodatkowo dodano linię trendu długości śledzia. Dane zostąły znormalizowane w przedziale wartości [0;1].
+
+
+
+###Calanus finmarchicus gat. 1
+
+```{r polt_plank_cfin1}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu") 
+plot_plank
+```
+
+###Calanus finmarchicus gat. 2
+
+```{r polt_plank_cfin2}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank
+```
+
+###Calanus helgolandicus gat. 1
+
+```{r polt_plank_chel1}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank
+```
+
+###Calanus helgolandicus gat. 2
+
+
+```{r polt_plank_chel2}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank
+```
+
+###Widłonogi gat. 1
+
+```{r polt_plank_lcop1}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank
+```
+
+###Widłonogi gat. 2
+
+```{r polt_plank_lcop2}
+plot_plank <- ggplot(nor_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) + geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+plot_plank
+```
+
+
+
+
 
 #Korelacja między zmiennymi
 obliczenie korelacji + wykresy
@@ -116,6 +218,7 @@ obliczenie korelacji + wykresy
 #Regresor przewidujący rozmiar śledzia
 bedzie regresor
 
-#Ważność atrybutów w opataciu o regresor
+#Ważność atrybutów w oparciu o regresor
 
+#Podsumowanie
 
