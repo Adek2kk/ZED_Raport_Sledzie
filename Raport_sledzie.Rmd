@@ -11,7 +11,7 @@ output:
 ---
 
 ```{r setup, include=FALSE,  echo=FALSE}
-knitr::opts_chunk$set(echo = FALSE,message=FALSE)
+knitr::opts_chunk$set(echo = FALSE,message=FALSE,cache=TRUE)
 ```
 
 
@@ -134,6 +134,13 @@ ggplotly(plot_length_hex)
 ```
 
 
+```{r plot_sledzie_hist}
+plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="black", fill="lightblue") +
+  theme_minimal() + labs(x = "Długość", y = "Liczba śledzi") + ggtitle("Histogram długości śledzia") 
+  
+plot_length_hist
+```
+
 ##Parametry morza
 
 ###Temperatura przy powierzchni wody 
@@ -185,32 +192,33 @@ plot_nao
 ###Natężenie połowów
 
 ```{r polt_catch}
-plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="zasolenie"), size=0.7) +
-  geom_smooth(aes(y=fbar,colour = "zasolenie trend"),method="auto",size=1.7)+
+plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natężenie"), size=0.7) +
+  geom_smooth(aes(y=fbar,colour = "natężenie trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres fbar od czasu") 
+  labs(x = "Czas", y = "Natężenie ") + ggtitle("Wykres natężenia połowów od czasu") 
 plot_catch
 ```
 
 ###Łączna liczba ryb złowionych w ramach połowu
 
 ```{r polt_totaln}
-plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="zasolenie"), size=0.7) +
-  geom_smooth(aes(y=totaln,colour = "zasolenie trend"),method="auto",size=1.7)+
+plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="złowione ryby"), size=0.7) +
+  geom_smooth(aes(y=totaln,colour = "złowione ryby trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres totaln od czasu") 
+  labs(x = "Czas", y = "złowione ryby ") + ggtitle("Wykres liczby złowionych ryb od czasu") 
 plot_totaln
 ```
 
 ###Łączne roczne natężenie połowów w regionie 
 
 ```{r polt_catch_year}
-plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="zasolenie"), size=1) +
-  geom_smooth(aes(y=cumf,colour = "zasolenie trend"),method="auto",size=1.7)+
+plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne natężenie"), size=1) +
+  geom_smooth(aes(y=cumf,colour = "roczne natężenie trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres  cumf  czasu") 
+  labs(x = "Czas", y = "Roczne natężenie ") + ggtitle("Wykres  rocznego natężenia połowów w regionie czasu") 
 plot_catch
 ```
 
@@ -218,10 +226,11 @@ plot_catch
 ###Roczny narybek
 
 ```{r polt_fry_year}
-plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="zasolenie"), size=1) +
-  geom_smooth(aes(y=recr,colour = "zasolenie trend"),method="auto",size=1.7)+
+plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny narybek"), size=1) +
+  geom_smooth(aes(y=recr,colour = "roczny narybek trend"),method="auto",size=1.7)+
+  facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Zasolenie ") + ggtitle("Wykres recr od czasu") 
+  labs(x = "Czas", y = "Roczny narybek ") + ggtitle("Wykres rocznego narybka od czasu") 
 plot_fry
 ```
 
@@ -312,8 +321,17 @@ plot_plank
 bedzie korelacja TODO
 obliczenie korelacji + wykresy
 ```{r correlation}
-#cor(df_norm_plank, use="complete.obs", method="kendall")
+kable(cor(df_norm_plank))
 ```
+
+```{r correlation_plot}
+plot_corr<- ggplot(new_my_df,aes(length,as.double(lcop1))) + geom_point() +
+  geom_smooth(method="lm",size = 2) +
+  theme_minimal() + labs(x = "Corr", y = "Corr") + ggtitle("Corr") 
+  
+plot_corr
+```
+
 #Regresor przewidujący rozmiar śledzia
 bedzie regresor TODO
 
