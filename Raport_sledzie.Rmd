@@ -118,7 +118,7 @@ kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieni
 
 
 #Analiza atrybutów
-Zestaw danych zawiera 15 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
+Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
 ##Długość śledzia
 
@@ -135,7 +135,7 @@ ggplotly(plot_length_hex)
 
 
 ```{r plot_sledzie_hist}
-plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="black", fill="lightblue") +
+plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
   theme_minimal() + labs(x = "Długość", y = "Liczba śledzi") + ggtitle("Histogram długości śledzia") 
   
 plot_length_hist
@@ -144,22 +144,24 @@ plot_length_hist
 ##Parametry morza
 
 ###Temperatura przy powierzchni wody 
-```{r nor_temp, echo=TRUE}
-df_norm_temp <- new_my_df %>% select(X,length,xmonth,sst)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,sst = normalit(sst))
-```
 
 ```{r polt_temp_sst}
-plot_temp <- ggplot(df_norm_temp,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+
-  geom_smooth(aes(y=sst,colour = "temperatura trend"),method="auto",size=1.7)+
+plot_temp <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = as.double(sst),colour="temperatura"), size=0.7) +
+  geom_smooth(aes(y=as.double(sst),colour = "temperatura trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Temperatura / Długość śledzia") + ggtitle("Wykres temperatury przy powierzchni wody od czasu") 
+  labs(x = "Czas", y = "Temperatura") + ggtitle("Wykres temperatury przy powierzchni wody od czasu") 
 plot_temp
+```
+```{r plot_sst_hist}
+plot_sst_hist<- ggplot(new_my_df,aes(as.double(sst))) + geom_histogram(binwidth=5, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Temperatura", y = "Liczba") + ggtitle("Histogram temperatury przy powierzchni wody") 
+  
+plot_sst_hist
 ```
 
 ###Poziom zasolenia wody
-```{r nor_salt, echo=TRUE}
+```{r df_salt}
 df_salt <- new_my_df %>% select(X,length,xmonth,sal)
 ```
 
@@ -172,19 +174,29 @@ plot_sal <- ggplot(df_salt,aes(X)) +  geom_point(aes(y = sal,colour="zasolenie")
 plot_sal
 ```
 
-###Oscylacja północnoatlantycka
-```{r nor_nao, echo=TRUE}
-df_norm_nao <- new_my_df %>% select(X,length,xmonth,nao)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,nao = normalit(nao))
+```{r plot_sal_hist}
+plot_sal_hist<- ggplot(new_my_df,aes(as.double(sal))) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Zasolenie", y = "Liczba") + ggtitle("Histogram poziomu zasolenia wody") 
+  
+plot_sal_hist
 ```
 
+###Oscylacja północnoatlantycka
+
+
 ```{r polt_nao_nao}
-plot_nao <- ggplot(df_norm_nao,aes(X)) +  geom_point(aes(y = nao,colour="nao"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+
+plot_nao <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = nao,colour="nao"), size=0.7) +
   geom_smooth(aes(y=nao,colour = "nao trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "NAO / Długość śledzia") + ggtitle("Wykres NAO od czasu") 
+  labs(x = "Czas", y = "NAO") + ggtitle("Wykres NAO od czasu") 
 plot_nao
+```
+```{r plot_nao_hist}
+plot_nao_hist<- ggplot(new_my_df,aes(nao)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Nao", y = "Liczba śledzi") + ggtitle("Histogram NAO") 
+  
+plot_nao_hist
 ```
 
 ##Połowy
@@ -199,6 +211,12 @@ plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natę�
   labs(x = "Czas", y = "Natężenie ") + ggtitle("Wykres natężenia połowów od czasu") 
 plot_catch
 ```
+```{r plot_fbar_hist}
+plot_fbar_hist<- ggplot(new_my_df,aes(as.double(fbar))) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Natężenie", y = "Liczba") + ggtitle("Histogram natężenia połowów od czasu") 
+  
+plot_fbar_hist
+```
 
 ###Łączna liczba ryb złowionych w ramach połowu
 
@@ -207,8 +225,14 @@ plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="zł
   geom_smooth(aes(y=totaln,colour = "złowione ryby trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "złowione ryby ") + ggtitle("Wykres liczby złowionych ryb od czasu") 
+  labs(x = "Czas", y = "Złowione ryby ") + ggtitle("Wykres liczby złowionych ryb od czasu") 
 plot_totaln
+```
+```{r plot_totaln_hist}
+plot_totaln_hist<- ggplot(new_my_df,aes(as.double(totaln))) + geom_histogram(binwidth=100000, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Złowione ryby", y = "Liczba") + ggtitle("Histogram liczby złowionych ryb od") 
+  
+plot_totaln_hist
 ```
 
 ###Łączne roczne natężenie połowów w regionie 
@@ -218,8 +242,14 @@ plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne
   geom_smooth(aes(y=cumf,colour = "roczne natężenie trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Roczne natężenie ") + ggtitle("Wykres  rocznego natężenia połowów w regionie czasu") 
+  labs(x = "Czas", y = "Roczne natężenie ") + ggtitle("Wykres rocznego natężenia połowów w regionie od czasu") 
 plot_catch
+```
+```{r plot_cumf_hist}
+plot_cumf_hist<- ggplot(new_my_df,aes(cumf)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Natężenie", y = "Liczba") + ggtitle("Histogram rocznego natężenia połowów w regionie") 
+  
+plot_cumf_hist
 ```
 
 
@@ -232,6 +262,12 @@ plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny n
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
   labs(x = "Czas", y = "Roczny narybek ") + ggtitle("Wykres rocznego narybka od czasu") 
 plot_fry
+```
+```{r plot_recr_hist}
+plot_recr_hist<- ggplot(new_my_df,aes(recr)) + geom_histogram(binwidth=160000, color="darkblue", fill="lightblue") +
+  theme_minimal() + labs(x = "Roczny narybek", y = "Liczba") + ggtitle("Histogram rocznego narybka") 
+  
+plot_recr_hist
 ```
 
 
@@ -249,79 +285,106 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 
 ```{r polt_plank_cfin1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
   geom_smooth(aes(y=cfin1,colour = "plankton trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu") 
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu") 
 plot_plank
+```
+```{r plot_cfin1_hist}
+plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_cfin1_hist
 ```
 
 ###Calanus finmarchicus gat. 2
 
 ```{r polt_plank_cfin2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
   geom_smooth(aes(y=cfin2,colour = "plankton trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
+```
+```{r plot_cfin2_hist}
+plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_cfin2_hist
 ```
 
 ###Calanus helgolandicus gat. 1
 
 ```{r polt_plank_chel1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
   geom_smooth(aes(y=chel1,colour = "plankton trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
+```
+```{r plot_chel1_hist}
+plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_chel1_hist
 ```
 
 ###Calanus helgolandicus gat. 2
 
-
 ```{r polt_plank_chel2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
   geom_smooth(aes(y=chel2,colour = "plankton trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  +
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
+```
+```{r plot_chel2_hist}
+plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_chel2_hist
 ```
 
 ###Widłonogi gat. 1
 
 ```{r polt_plank_lcop1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ 
   geom_smooth(aes(y=lcop1,colour = "plankton trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
+```
+```{r plot_lcop1_hist}
+plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_lcop1_hist
 ```
 
 ###Widłonogi gat. 2
 
 ```{r polt_plank_lcop2}
-plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) +
-  geom_smooth(aes(y=length,colour = "długość"),method="auto",size=1.7)+ facet_wrap(~xmonth) + 
+plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) + 
+  facet_wrap(~xmonth) + 
   geom_smooth(aes(y=lcop2,colour = "plankton trend"),method="auto",size=1.7)+
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())  + 
-  labs(x = "Czas", y = "Plankton / Długość śledzia") + ggtitle("Wykres poziomu planktonu od czasu")
+  labs(x = "Czas", y = "Plankton") + ggtitle("Wykres poziomu planktonu od czasu")
 plot_plank
 ```
-
-
-
+```{r plot_lcop2_hist}
+plot_lcop2_hist<- ggplot(df_norm_plank,aes(lcop2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+  
+plot_lcop2_hist
+```
 
 
 #Korelacja między zmiennymi
 bedzie korelacja TODO
 obliczenie korelacji + wykresy
 ```{r correlation}
-kable(cor(df_norm_plank))
+#corr_df <- new_my_df%>%select(-c(X,xmonth))
+corr_plank = cor(df_norm_plank)
+corr_plank <- round(corr_plank,2)
+corr_melt <- melt(corr_plank)
+p <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") + scale_fill_gradient2(low = "red", mid = "white", high = "blue") + geom_text(aes(label=value))
+p
+corr_plank
 ```
 
 ```{r correlation_plot}

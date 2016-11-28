@@ -117,7 +117,7 @@ Przyjęta metoda nie zaburzyła w widoczny sposób podstawowych statystyk widocz
 
 
 #Analiza atrybutów
-Zestaw danych zawiera 15 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
+Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
 ##Długość śledzia
 
@@ -132,46 +132,44 @@ Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śl
 
 ###Temperatura przy powierzchni wody 
 
-```r
-df_norm_temp <- new_my_df %>% select(X,length,xmonth,sst)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,sst = normalit(sst))
-```
-
 ![](Raport_sledzie_files/figure-html/polt_temp_sst-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_sst_hist-1.png)<!-- -->
 
 ###Poziom zasolenia wody
 
-```r
-df_salt <- new_my_df %>% select(X,length,xmonth,sal)
-```
 
 ![](Raport_sledzie_files/figure-html/polt_salt_sal-1.png)<!-- -->
 
+![](Raport_sledzie_files/figure-html/plot_sal_hist-1.png)<!-- -->
+
 ###Oscylacja północnoatlantycka
 
-```r
-df_norm_nao <- new_my_df %>% select(X,length,xmonth,nao)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,nao = normalit(nao))
-```
 
 ![](Raport_sledzie_files/figure-html/polt_nao_nao-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_nao_hist-1.png)<!-- -->
 
 ##Połowy
 
 ###Natężenie połowów
 
 ![](Raport_sledzie_files/figure-html/polt_catch-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_fbar_hist-1.png)<!-- -->
 
 ###Łączna liczba ryb złowionych w ramach połowu
 
 ![](Raport_sledzie_files/figure-html/polt_totaln-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_totaln_hist-1.png)<!-- -->
 
 ###Łączne roczne natężenie połowów w regionie 
 
 ![](Raport_sledzie_files/figure-html/polt_catch_year-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_cumf_hist-1.png)<!-- -->
 
 
 ###Roczny narybek
 
 ![](Raport_sledzie_files/figure-html/polt_fry_year-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_recr_hist-1.png)<!-- -->
 
 
 ##Dostepność planktonu
@@ -186,47 +184,51 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 ###Calanus finmarchicus gat. 1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin1-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_cfin1_hist-1.png)<!-- -->
 
 ###Calanus finmarchicus gat. 2
 
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin2-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_cfin2_hist-1.png)<!-- -->
 
 ###Calanus helgolandicus gat. 1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_chel1-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_chel1_hist-1.png)<!-- -->
 
 ###Calanus helgolandicus gat. 2
 
-
 ![](Raport_sledzie_files/figure-html/polt_plank_chel2-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_chel2_hist-1.png)<!-- -->
 
 ###Widłonogi gat. 1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop1-1.png)<!-- -->
+![](Raport_sledzie_files/figure-html/plot_lcop1_hist-1.png)<!-- -->
 
 ###Widłonogi gat. 2
 
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop2-1.png)<!-- -->
-
-
-
+![](Raport_sledzie_files/figure-html/plot_lcop2_hist-1.png)<!-- -->
 
 
 #Korelacja między zmiennymi
 bedzie korelacja TODO
 obliczenie korelacji + wykresy
+![](Raport_sledzie_files/figure-html/correlation-1.png)<!-- -->
 
-                   X       length       xmonth        cfin1       cfin2        chel1        chel2        lcop1        lcop2
--------  -----------  -----------  -----------  -----------  ----------  -----------  -----------  -----------  -----------
-X          1.0000000   -0.3391886   -0.0004044   -0.0562843   0.1297417   -0.2140330   -0.0163199   -0.2131667   -0.0548023
-length    -0.3391886    1.0000000    0.0106780    0.1444392   0.0323777    0.1742389    0.0106863    0.2107206   -0.0256300
-xmonth    -0.0004044    0.0106780    1.0000000    0.0094690   0.0040670    0.0588117   -0.0465874    0.0225610   -0.0353147
-cfin1     -0.0562843    0.1444392    0.0094690    1.0000000   0.4437258    0.2986906   -0.1786515    0.1536496   -0.0876373
-cfin2      0.1297417    0.0323777    0.0040670    0.4437258   1.0000000    0.0100973    0.1941610    0.1413029    0.3246704
-chel1     -0.2140330    0.1742389    0.0588117    0.2986906   0.0100973    1.0000000   -0.0270032    0.7245016    0.0724597
-chel2     -0.0163199    0.0106863   -0.0465874   -0.1786515   0.1941610   -0.0270032    1.0000000    0.0711497    0.7695685
-lcop1     -0.2131667    0.2107206    0.0225610    0.1536496   0.1413029    0.7245016    0.0711497    1.0000000    0.1735023
-lcop2     -0.0548023   -0.0256300   -0.0353147   -0.0876373   0.3246704    0.0724597    0.7695685    0.1735023    1.0000000
+```
+##            X length xmonth cfin1 cfin2 chel1 chel2 lcop1 lcop2
+## X       1.00  -0.34   0.00 -0.06  0.13 -0.21 -0.02 -0.21 -0.05
+## length -0.34   1.00   0.01  0.14  0.03  0.17  0.01  0.21 -0.03
+## xmonth  0.00   0.01   1.00  0.01  0.00  0.06 -0.05  0.02 -0.04
+## cfin1  -0.06   0.14   0.01  1.00  0.44  0.30 -0.18  0.15 -0.09
+## cfin2   0.13   0.03   0.00  0.44  1.00  0.01  0.19  0.14  0.32
+## chel1  -0.21   0.17   0.06  0.30  0.01  1.00 -0.03  0.72  0.07
+## chel2  -0.02   0.01  -0.05 -0.18  0.19 -0.03  1.00  0.07  0.77
+## lcop1  -0.21   0.21   0.02  0.15  0.14  0.72  0.07  1.00  0.17
+## lcop2  -0.05  -0.03  -0.04 -0.09  0.32  0.07  0.77  0.17  1.00
+```
 
 ![](Raport_sledzie_files/figure-html/correlation_plot-1.png)<!-- -->
 
