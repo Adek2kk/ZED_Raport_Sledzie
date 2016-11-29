@@ -121,7 +121,11 @@ kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieni
 #Analiza atrybutów
 Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
-##Długość śledzia
+TODO
+
+* opisy do atrybutów
+
+##Długość śledzia - length
 
 Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śledzia zwiekszała się do na przestrzenia lat do próbki eksperymentu ok. 15 tysięcy. Następnie widać stopniowy spadek długości śledzia, aż do końca zebranych danych.
 ```{r plot_sledzie_time,  cache=TRUE}
@@ -144,7 +148,7 @@ plot_length_hist
 
 ##Parametry morza
 
-###Temperatura przy powierzchni wody 
+###Temperatura przy powierzchni wody - sst
 
 ```{r polt_temp_sst}
 plot_sst <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
@@ -161,7 +165,7 @@ plot_sst_hist<- ggplot(new_my_df,aes(sst)) + geom_histogram(binwidth=0.2, color=
 plot_sst_hist
 ```
 
-###Poziom zasolenia wody
+###Poziom zasolenia wody - sal
 ```{r df_salt}
 df_salt <- new_my_df %>% select(X,length,xmonth,sal)
 ```
@@ -182,7 +186,7 @@ plot_sal_hist<- ggplot(new_my_df,aes(sal)) + geom_histogram(binwidth=0.05, color
 plot_sal_hist
 ```
 
-###Oscylacja północnoatlantycka
+###Oscylacja północnoatlantycka - nao
 
 
 ```{r polt_nao_nao}
@@ -202,7 +206,7 @@ plot_nao_hist
 
 ##Połowy
 
-###Natężenie połowów
+###Natężenie połowów - fbar
 
 ```{r polt_catch}
 plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natężenie"), size=0.7) +
@@ -219,7 +223,7 @@ plot_fbar_hist<- ggplot(new_my_df,aes(fbar)) + geom_histogram(binwidth=0.05, col
 plot_fbar_hist
 ```
 
-###Łączna liczba ryb złowionych w ramach połowu
+###Łączna liczba ryb złowionych w ramach połowu - totaln
 
 ```{r polt_totaln}
 plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="złowione ryby"), size=0.7) +
@@ -236,7 +240,7 @@ plot_totaln_hist<- ggplot(new_my_df,aes(totaln)) + geom_histogram(binwidth=10000
 plot_totaln_hist
 ```
 
-###Łączne roczne natężenie połowów w regionie 
+###Łączne roczne natężenie połowów w regionie - cumf
 
 ```{r polt_catch_year}
 plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne natężenie"), size=1) +
@@ -254,7 +258,7 @@ plot_cumf_hist
 ```
 
 
-###Roczny narybek
+###Roczny narybek - recr
 
 ```{r polt_fry_year}
 plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny narybek"), size=1) +
@@ -282,7 +286,7 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 
 ```
 
-###Calanus finmarchicus gat. 1
+###Calanus finmarchicus gat. 1 - cfin1
 
 ```{r polt_plank_cfin1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) +
@@ -298,7 +302,7 @@ plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.0
 plot_cfin1_hist
 ```
 
-###Calanus finmarchicus gat. 2
+###Calanus finmarchicus gat. 2 - cfin2
 
 ```{r polt_plank_cfin2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) +
@@ -313,7 +317,7 @@ plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.0
 plot_cfin2_hist
 ```
 
-###Calanus helgolandicus gat. 1
+###Calanus helgolandicus gat. 1 - chel1
 
 ```{r polt_plank_chel1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
@@ -328,7 +332,7 @@ plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.0
 plot_chel1_hist
 ```
 
-###Calanus helgolandicus gat. 2
+###Calanus helgolandicus gat. 2 - chel2
 
 ```{r polt_plank_chel2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
@@ -343,7 +347,7 @@ plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.0
 plot_chel2_hist
 ```
 
-###Widłonogi gat. 1
+###Widłonogi gat. 1 - lcop1
 
 ```{r polt_plank_lcop1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) +
@@ -358,7 +362,7 @@ plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.0
 plot_lcop1_hist
 ```
 
-###Widłonogi gat. 2
+###Widłonogi gat. 2 - lcop2
 
 ```{r polt_plank_lcop2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) + 
@@ -376,15 +380,24 @@ plot_lcop2_hist
 
 
 #Korelacja między zmiennymi
-bedzie korelacja TODO
-obliczenie korelacji + wykresy
-```{r correlation}
-corr_df <- new_my_df%>%select(-c(X,xmonth))
+TODO
+
+* text
+* korelacja parametry
+
+```{r correlation, message=FALSE}
+corr_df <- new_my_df%>%select(-X)
 corr <- cor(corr_df)
 corr[upper.tri(corr)]<- NA
 corr <- round(corr,2)
 corr_melt <- melt(corr)
-corr_plot <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") + scale_fill_gradient2(low = "red", mid = "white", high = "steelblue") + geom_text(aes(label=value))
+corr_plot <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") +
+  scale_fill_gradient2(low = "red", mid = "white", high = "steelblue",guide_legend(title="Korelacja Pearsona") ) + 
+  geom_text(aes(label=value), na.rm=TRUE) + 
+  scale_y_discrete(position ="right") + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),axis.title.x=element_blank(),axis.title.y=element_blank()) +
+  ggtitle("Tabela korelacji zmiennych ") 
+
 corr_plot
 
 ```

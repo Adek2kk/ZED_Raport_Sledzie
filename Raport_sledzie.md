@@ -118,7 +118,11 @@ Przyjęta metoda nie zaburzyła w widoczny sposób podstawowych statystyk widocz
 #Analiza atrybutów
 Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
-##Długość śledzia
+TODO
+
+* opisy do atrybutów
+
+##Długość śledzia - length
 
 Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śledzia zwiekszała się do na przestrzenia lat do próbki eksperymentu ok. 15 tysięcy. Następnie widać stopniowy spadek długości śledzia, aż do końca zebranych danych.
 ![](Raport_sledzie_files/figure-html/plot_sledzie_time-1.png)<!-- --><!--html_preserve--><div id="htmlwidget-fe6835cb11d0bb3e9095" style="width:672px;height:480px;" class="plotly html-widget"></div>
@@ -129,19 +133,19 @@ Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śl
 
 ##Parametry morza
 
-###Temperatura przy powierzchni wody 
+###Temperatura przy powierzchni wody - sst
 
 ![](Raport_sledzie_files/figure-html/polt_temp_sst-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_sst_hist-1.png)<!-- -->
 
-###Poziom zasolenia wody
+###Poziom zasolenia wody - sal
 
 
 ![](Raport_sledzie_files/figure-html/polt_salt_sal-1.png)<!-- -->
 
 ![](Raport_sledzie_files/figure-html/plot_sal_hist-1.png)<!-- -->
 
-###Oscylacja północnoatlantycka
+###Oscylacja północnoatlantycka - nao
 
 
 ![](Raport_sledzie_files/figure-html/polt_nao_nao-1.png)<!-- -->
@@ -149,23 +153,23 @@ Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śl
 
 ##Połowy
 
-###Natężenie połowów
+###Natężenie połowów - fbar
 
 ![](Raport_sledzie_files/figure-html/polt_catch-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_fbar_hist-1.png)<!-- -->
 
-###Łączna liczba ryb złowionych w ramach połowu
+###Łączna liczba ryb złowionych w ramach połowu - totaln
 
 ![](Raport_sledzie_files/figure-html/polt_totaln-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_totaln_hist-1.png)<!-- -->
 
-###Łączne roczne natężenie połowów w regionie 
+###Łączne roczne natężenie połowów w regionie - cumf
 
 ![](Raport_sledzie_files/figure-html/polt_catch_year-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cumf_hist-1.png)<!-- -->
 
 
-###Roczny narybek
+###Roczny narybek - recr
 
 ![](Raport_sledzie_files/figure-html/polt_fry_year-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_recr_hist-1.png)<!-- -->
@@ -180,44 +184,42 @@ Przed wykonaniem wykresów dokonano normalizacjo danych w przedziale [0:1] w cel
 df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmute(X = X,length = normalit(length),xmonth=xmonth,cfin1 = normalit(cfin1),cfin2 = normalit(cfin2),chel1 = normalit(chel1),chel2 = normalit(chel2),lcop1 = normalit(lcop1),lcop2 = normalit(lcop2))
 ```
 
-###Calanus finmarchicus gat. 1
+###Calanus finmarchicus gat. 1 - cfin1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cfin1_hist-1.png)<!-- -->
 
-###Calanus finmarchicus gat. 2
+###Calanus finmarchicus gat. 2 - cfin2
 
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cfin2_hist-1.png)<!-- -->
 
-###Calanus helgolandicus gat. 1
+###Calanus helgolandicus gat. 1 - chel1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_chel1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_chel1_hist-1.png)<!-- -->
 
-###Calanus helgolandicus gat. 2
+###Calanus helgolandicus gat. 2 - chel2
 
 ![](Raport_sledzie_files/figure-html/polt_plank_chel2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_chel2_hist-1.png)<!-- -->
 
-###Widłonogi gat. 1
+###Widłonogi gat. 1 - lcop1
 
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_lcop1_hist-1.png)<!-- -->
 
-###Widłonogi gat. 2
+###Widłonogi gat. 2 - lcop2
 
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_lcop2_hist-1.png)<!-- -->
 
 
 #Korelacja między zmiennymi
-bedzie korelacja TODO
-obliczenie korelacji + wykresy
+TODO
 
-```
-## Warning: Removed 91 rows containing missing values (geom_text).
-```
+* text
+* korelacja parametry
 
 ![](Raport_sledzie_files/figure-html/correlation-1.png)<!-- -->
 
