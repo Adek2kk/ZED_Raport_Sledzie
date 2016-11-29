@@ -422,7 +422,7 @@ corr_plot
 bedzie regresor TODO
 
 ```{r regression}
-reg_df <- new_my_df %>% select(-X)
+reg_df <- new_my_df %>% select(-X,-xmonth)
 inTraining <- createDataPartition(y = reg_df$length,p = 0.7,list = FALSE)
 training <- reg_df[ inTraining,]
 testing  <- reg_df[-inTraining,]
@@ -435,6 +435,7 @@ fit <- train(length ~ .,
              data = training,
              method = "rf",
              trControl = ctrl,
+             importance = TRUE,
              ntree = 10)
 rfClasses <- predict(fit, newdata = testing)
 ```
@@ -471,8 +472,9 @@ reg_plot_test
 #Ważność atrybutów w oparciu o regresor
 bedzie waznosc TODO
 ```{r atrribute_value}
-
-#kable(tibble::rownames_to_column(varImp(fit)$importance,var="atrybut")%>%arrange(desc(Overall)))
+#varImp(fit)
+kable(head(reg_df))
+kable(tibble::rownames_to_column(varImp(fit)$importance,var="atrybut")%>%arrange(desc(Overall)))
 ```
 
 #Wnioski
