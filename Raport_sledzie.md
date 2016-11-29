@@ -171,23 +171,24 @@ Wykres czasu przedstawia początkową wartość bliską zeru lub dodatnią w zal
 ##Połowy
 
 ###Natężenie połowów - fbar
-
+Atrybut nateżenia połowów przedstawiony jako ułamek pozostawionego narybku. Na wykresie czasu można zobserwować dużą zmienność wartości, które jednak są występują najczęściej poniżej wartości 0,6 co potwiedza histogram.
 ![](Raport_sledzie_files/figure-html/polt_catch-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_fbar_hist-1.png)<!-- -->
 
 ###Łączna liczba ryb złowionych w ramach połowu - totaln
+Z wykresu możemy zauważyć dużą zmienność z tendencją malejącą. Z rozrzutu punktów można wywnioskować różne powodzenie przy połowach -  w podobnym czasie połowy były duże jak i małe. Histogram pokazuje dużą czestość wysokich wartości połowów.
 
 ![](Raport_sledzie_files/figure-html/polt_totaln-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_totaln_hist-1.png)<!-- -->
 
 ###Łączne roczne natężenie połowów w regionie - cumf
-
+Atrybut łącznego rocznego natężnia połowów w regionieprzedstawiony jako ułamek pozostawionego narybku. Wykres przebiegu czasowego pokazuje wzrost z 0,1 do ok 0,3 w przeciągu kolejnych lat. 
 ![](Raport_sledzie_files/figure-html/polt_catch_year-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cumf_hist-1.png)<!-- -->
 
 
 ###Roczny narybek - recr
-
+Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają si wyjątkowe pomiary do wartości nawet 1,6mln. 
 ![](Raport_sledzie_files/figure-html/polt_fry_year-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_recr_hist-1.png)<!-- -->
 

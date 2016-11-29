@@ -8,8 +8,8 @@ output:
     number_sections: yes
     toc: yes
     toc_float:
-      collapsed: true
-      smooth_scroll: false
+      collapsed: yes
+      smooth_scroll: no
 ---
 
 ```{r setup, include=FALSE,  echo=FALSE}
@@ -151,7 +151,7 @@ ggplotly(plot_length_hex)
 
 
 ```{r plot_sledzie_hist}
-plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
+plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="white", fill="steelblue") +
   theme_minimal() + labs(x = "Długość", y = "Częstość") + ggtitle("Histogram długości śledzia") 
   
 plot_length_hist
@@ -170,7 +170,7 @@ plot_sst <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = sst,colour="temperatu
 plot_sst
 ```
 ```{r plot_sst_hist}
-plot_sst_hist<- ggplot(new_my_df,aes(sst)) + geom_histogram(binwidth=0.2, color="darkblue", fill="lightblue") +
+plot_sst_hist<- ggplot(new_my_df,aes(sst)) + geom_histogram(binwidth=0.2, color="white", fill="steelblue") +
   theme_minimal() + labs(x = "Temperatura", y = "Częstość") + ggtitle("Histogram temperatury przy powierzchni wody") 
   
 plot_sst_hist
@@ -192,7 +192,7 @@ plot_sal
 ```
 
 ```{r plot_sal_hist}
-plot_sal_hist<- ggplot(new_my_df,aes(sal)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+plot_sal_hist<- ggplot(new_my_df,aes(sal)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") +
   theme_minimal() + labs(x = "Zasolenie", y = "Częstość") + ggtitle("Histogram poziomu zasolenia wody") 
   
 plot_sal_hist
@@ -211,7 +211,7 @@ plot_nao <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = nao,colour="nao"), si
 plot_nao
 ```
 ```{r plot_nao_hist}
-plot_nao_hist<- ggplot(new_my_df,aes(nao)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
+plot_nao_hist<- ggplot(new_my_df,aes(nao)) + geom_histogram(binwidth=0.5, color="white", fill="steelblue") +
   theme_minimal() + labs(x = "Nao", y = "Częstość") + ggtitle("Histogram NAO") 
   
 plot_nao_hist
@@ -220,7 +220,7 @@ plot_nao_hist
 ##Połowy
 
 ###Natężenie połowów - fbar
-
+Atrybut nateżenia połowów przedstawiony jako ułamek pozostawionego narybku. Na wykresie czasu można zobserwować dużą zmienność wartości, które jednak są występują najczęściej poniżej wartości 0,6 co potwiedza histogram.
 ```{r polt_catch}
 plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natężenie"), size=0.7) +
   geom_smooth(aes(y=fbar,colour = "natężenie trend"),method="auto",size=1.7)+
@@ -230,13 +230,14 @@ plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natę�
 plot_catch
 ```
 ```{r plot_fbar_hist}
-plot_fbar_hist<- ggplot(new_my_df,aes(fbar)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Natężenie", y = "Liczba") + ggtitle("Histogram natężenia połowów od czasu") 
+plot_fbar_hist<- ggplot(new_my_df,aes(fbar)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") +
+  theme_minimal() + labs(x = "Natężenie", y = "Częstość") + ggtitle("Histogram natężenia połowów od czasu") 
   
 plot_fbar_hist
 ```
 
 ###Łączna liczba ryb złowionych w ramach połowu - totaln
+Z wykresu możemy zauważyć dużą zmienność z tendencją malejącą. Z rozrzutu punktów można wywnioskować różne powodzenie przy połowach -  w podobnym czasie połowy były duże jak i małe. Histogram pokazuje dużą czestość wysokich wartości połowów.
 
 ```{r polt_totaln}
 plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="złowione ryby"), size=0.7) +
@@ -247,14 +248,14 @@ plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="zł
 plot_totaln
 ```
 ```{r plot_totaln_hist}
-plot_totaln_hist<- ggplot(new_my_df,aes(totaln)) + geom_histogram(binwidth=100000, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Złowione ryby", y = "Liczba") + ggtitle("Histogram liczby złowionych ryb od") 
+plot_totaln_hist<- ggplot(new_my_df,aes(totaln)) + geom_histogram(binwidth=100000, color="white", fill="steelblue") +
+  theme_minimal() + labs(x = "Złowione ryby", y = "Częstość") + ggtitle("Histogram liczby złowionych ryb od") 
   
 plot_totaln_hist
 ```
 
 ###Łączne roczne natężenie połowów w regionie - cumf
-
+Atrybut łącznego rocznego natężnia połowów w regionieprzedstawiony jako ułamek pozostawionego narybku. Wykres przebiegu czasowego pokazuje wzrost z 0,1 do ok 0,3 w przeciągu kolejnych lat. 
 ```{r polt_catch_year}
 plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne natężenie"), size=1) +
   geom_smooth(aes(y=cumf,colour = "roczne natężenie trend"),method="auto",size=1.7)+
@@ -264,15 +265,15 @@ plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne
 plot_catch
 ```
 ```{r plot_cumf_hist}
-plot_cumf_hist<- ggplot(new_my_df,aes(cumf)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Natężenie", y = "Liczba") + ggtitle("Histogram rocznego natężenia połowów w regionie") 
+plot_cumf_hist<- ggplot(new_my_df,aes(cumf)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") +
+  theme_minimal() + labs(x = "Natężenie", y = "Częstość") + ggtitle("Histogram rocznego natężenia połowów w regionie") 
   
 plot_cumf_hist
 ```
 
 
 ###Roczny narybek - recr
-
+Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają si wyjątkowe pomiary do wartości nawet 1,6mln. 
 ```{r polt_fry_year}
 plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny narybek"), size=1) +
   geom_smooth(aes(y=recr,colour = "roczny narybek trend"),method="auto",size=1.7)+
@@ -282,8 +283,8 @@ plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny n
 plot_fry
 ```
 ```{r plot_recr_hist}
-plot_recr_hist<- ggplot(new_my_df,aes(recr)) + geom_histogram(binwidth=160000, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Roczny narybek", y = "Liczba") + ggtitle("Histogram rocznego narybka") 
+plot_recr_hist<- ggplot(new_my_df,aes(recr)) + geom_histogram(binwidth=160000, color="white", fill="steelblue") +
+  theme_minimal() + labs(x = "Roczny narybek", y = "Częstość") + ggtitle("Histogram rocznego narybka") 
   
 plot_recr_hist
 ```
@@ -310,7 +311,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="p
 plot_plank
 ```
 ```{r plot_cfin1_hist}
-plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_cfin1_hist
 ```
@@ -325,7 +326,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="p
 plot_plank
 ```
 ```{r plot_cfin2_hist}
-plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_cfin2_hist
 ```
@@ -340,7 +341,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="p
 plot_plank
 ```
 ```{r plot_chel1_hist}
-plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_chel1_hist
 ```
@@ -355,7 +356,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="p
 plot_plank
 ```
 ```{r plot_chel2_hist}
-plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_chel2_hist
 ```
@@ -370,7 +371,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="p
 plot_plank
 ```
 ```{r plot_lcop1_hist}
-plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_lcop1_hist
 ```
@@ -386,7 +387,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="p
 plot_plank
 ```
 ```{r plot_lcop2_hist}
-plot_lcop2_hist<- ggplot(df_norm_plank,aes(lcop2)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_lcop2_hist<- ggplot(df_norm_plank,aes(lcop2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
   
 plot_lcop2_hist
 ```
