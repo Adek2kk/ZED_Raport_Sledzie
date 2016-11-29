@@ -421,6 +421,31 @@ corr_plot
 bedzie regresor TODO
 
 ```{r regression}
+set.seed(666)
+
+inTraining <- createDataPartition(y = new_my_df$length,p = 0.7,list = FALSE)
+training <- new_my_df[ inTraining,]
+testing  <- new_my_df[-inTraining,]
+
+ctrl <- trainControl(
+    # powtórzona ocena krzyżowa
+    method = "repeatedcv",
+    # liczba podziałów
+    number = 2,
+    # liczba powtórzeń
+    repeats = 5)
+
+fit <- train(length ~ .,
+             data = training,
+             method = "rf",
+             trControl = ctrl,
+             ntree = 10)
+
+fit
+
+rfClasses <- predict(fit, newdata = testing)
+rfClasses
+
 
 ```
 
