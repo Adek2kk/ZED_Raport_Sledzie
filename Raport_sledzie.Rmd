@@ -44,12 +44,9 @@ library(caret)
 ```
 
 ```{r help_function}
-
 normalit <- function(x){
   as.double(x)/max(as.double(x))
 }
-
-
 ```
 
 ##Wczytanie danych
@@ -271,7 +268,6 @@ plot_cumf_hist<- ggplot(new_my_df,aes(cumf)) + geom_histogram(binwidth=0.05, col
 plot_cumf_hist
 ```
 
-
 ###Roczny narybek - recr
 Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają si wyjątkowe pomiary do wartości nawet 1,6mln. 
 ```{r polt_fry_year}
@@ -291,7 +287,7 @@ plot_recr_hist
 
 
 ##Dostepność planktonu
-Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Wykresy te podzielono na  poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Dodatkowo dodano linię trendu długości śledzia. 
+Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Są to organizmy stanowiące pożywienie śledzi oceanicznych. Wykresy te podzielono na poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Stworzono również histogramy w celu sprawdzenia rozłożenia wartości.
 
 Przed wykonaniem wykresów dokonano normalizacjo danych w przedziale [0:1] w celu ujednoliceniu wartości i ułatwieniu porównania danych.
 ```{r nor_plank, echo=TRUE}
@@ -301,7 +297,7 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 ```
 
 ###Calanus finmarchicus gat. 1 - cfin1
-
+Atrybut zawiera bardzo dużą liczbę wartości zbliżoną zeru w stosunku do reszty wartości. Powduję to dużą liczbę spadkóW w linii trendu. 
 ```{r polt_plank_cfin1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=cfin1,colour = "plankton trend"),method="auto",size=1.7)+
@@ -311,13 +307,13 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin1,colour="p
 plot_plank
 ```
 ```{r plot_cfin1_hist}
-plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_cfin1_hist<- ggplot(df_norm_plank,aes(cfin1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_cfin1_hist
 ```
 
 ###Calanus finmarchicus gat. 2 - cfin2
-
+Wartości atrybutow są bardzo zróżnicowane. Widać jednak na każdym wykresie miesieczni jedno miejsce wysokiego wzorstu w okolicy 2/3 czasu. Na histogramie widać 4 wybijające się wartości.
 ```{r polt_plank_cfin2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=cfin2,colour = "plankton trend"),method="auto",size=1.7)+
@@ -326,13 +322,13 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="p
 plot_plank
 ```
 ```{r plot_cfin2_hist}
-plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_cfin2_hist<- ggplot(df_norm_plank,aes(cfin2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_cfin2_hist
 ```
 
 ###Calanus helgolandicus gat. 1 - chel1
-
+Atrybut charakteryzuje się bardzo dużym rozrzutem wartości. Na histogramie widać jedną dużą częstość dla wartości 0,25 i jedną większą dla 0,8.
 ```{r polt_plank_chel1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=chel1,colour = "plankton trend"),method="auto",size=1.7)+
@@ -341,13 +337,13 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="p
 plot_plank
 ```
 ```{r plot_chel1_hist}
-plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_chel1_hist<- ggplot(df_norm_plank,aes(chel1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_chel1_hist
 ```
 
 ###Calanus helgolandicus gat. 2 - chel2
-
+Atrybut ten również charakteryzuje się dużym zróżnicowaniem wartości z wyróżnieniem dwóch wartości o dużej częstości.
 ```{r polt_plank_chel2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=chel2,colour = "plankton trend"),method="auto",size=1.7)+
@@ -356,13 +352,13 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = chel1,colour="p
 plot_plank
 ```
 ```{r plot_chel2_hist}
-plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_chel2_hist<- ggplot(df_norm_plank,aes(chel2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_chel2_hist
 ```
 
 ###Widłonogi gat. 1 - lcop1
-
+Tak jak poprzednie atrybuty dotyczące planktonu i ten charakteryzuję się dużym rozrzutem wartośći. Histogram pokazuje rozkład podobny do równomiernego z wyjątkiem dwóch wartości o dużej częstości.
 ```{r polt_plank_lcop1}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=lcop1,colour = "plankton trend"),method="auto",size=1.7)+
@@ -371,13 +367,13 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop1,colour="p
 plot_plank
 ```
 ```{r plot_lcop1_hist}
-plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_lcop1_hist<- ggplot(df_norm_plank,aes(lcop1)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_lcop1_hist
 ```
 
 ###Widłonogi gat. 2 - lcop2
-
+Ten atrybut charakteryzuję się dużym rozrzutem wartośći. Histogram pokazuje rozkład podobny do równomiernego z wyjątkiem dwóch wartości o dużej częstości.
 ```{r polt_plank_lcop2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="plankton"), size=0.7) + 
   facet_wrap(~xmonth) + 
@@ -387,7 +383,7 @@ plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = lcop2,colour="p
 plot_plank
 ```
 ```{r plot_lcop2_hist}
-plot_lcop2_hist<- ggplot(df_norm_plank,aes(lcop2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Liczba") + ggtitle("Histogram poziomu planktonu") 
+plot_lcop2_hist<- ggplot(df_norm_plank,aes(lcop2)) + geom_histogram(binwidth=0.05, color="white", fill="steelblue") + theme_minimal() + labs(x = "Plankton", y = "Częstość") + ggtitle("Histogram poziomu planktonu") 
   
 plot_lcop2_hist
 ```
