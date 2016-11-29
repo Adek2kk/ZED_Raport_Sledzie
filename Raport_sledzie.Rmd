@@ -71,6 +71,13 @@ uniq <- my_df %>% summarise_each(funs(n_distinct(., na.rm = TRUE)))
 kable(uniq, caption = "Tabela unikalnych wartości")
 ```
 
+##Powtarzalność wyników
+W celu zachowania powtarzalności wyników ustawion ziarna generatora na:
+```{r seed_init, echo=TRUE}
+set.seed(666)
+```
+Dodatkowe wszelki kody zmieniające dane początkowe zostały wyświetlone przy odpowiednich krokach raportu.
+
 ##Wartości brakujące
 Z ogólnych statystyk dla danych dotyczących śledzi można odczytać 7 kolumn, które zawierają wartości brakujące. Ten rozdział raportu będzie poświęcony analizie tych wartości na podstawie, której zostanie podjęta decyzja w jaki sposób zostanie rozwiązany problem - zostawić brakujące wartości, usunąć wiersze z brakującymi wartościami lub wypełnić luki w danych.
 
@@ -102,7 +109,7 @@ missing_pattern2[-nrow(missing_pattern2),] %>% is.na %>% melt %>% ggplot(data = 
 
 Wykonano również wykres przedstawiający liczbę brakujących wartości dla każdego atrybutu. Są one jednak bardzo zbliżonę i w tym wypadku nie można wskazać atrybutu wyróżniającego się.
 ```{r missing_value_plot}
-mv_count <- melt(data= missing_pattern2[nrow(missing_pattern2),],)
+mv_count <- melt(data= missing_pattern2[nrow(missing_pattern2),])
 plot_mv_count <- ggplot(mv_count,aes(x=variable,y=value, fill=variable))+geom_bar(stat="identity") + 
                     labs(x = "Zmienne z brakującymi wartościami", y="Liczba brakujących wartości") + 
                     ggtitle("Wykres liczby brakujących wartości") + 
@@ -129,12 +136,7 @@ kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieni
 #Analiza atrybutów
 Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
 
-TODO
-
-* opisy do atrybutów
-
 ##Długość śledzia - length
-
 Długość śledzi wyrażona został w centymetrach. Z pierwszego wykresu można odczytać wzrost długość do jednostek czasu ok 17-18 tysięcy, następnie rozpoczyna się spadek tej wartości. Wykres heksalny ukazuje większe skupienie śledzi o długości 26cm i wiecej do jednostki ok 20 tysięcy. Ostatni wykres jest histogramem, który przedstawia rozkład zbliżony do normalnego. Widać na nim przewagę wartości około 25cm.
 ```{r plot_sledzie_time,  cache=TRUE}
 plot_length <- ggplot(new_my_df,aes(X,length))  + geom_line(alpha=0.3) + stat_smooth(method="auto",size = 2)
@@ -155,7 +157,6 @@ plot_length_hist
 ```
 
 ##Parametry morza
-
 ###Temperatura przy powierzchni wody - sst
 Atrybut zawiera temperaturę przy powierzchni wody mierzoną w stopniach Celsjusza.Pierwszy wykres przedstawia zmienność temperatury w czasie z podzieleniem na miesiąće w roku. Można tu odczytać wzrost temperatur wraz z czasem, niezależnie od miesiąca. Histogram przedstawia częste wartości w oklicach 13,5-13,75 oraz większą liczbę temperatur wyższych z dostępnego zakresu.
 ```{r polt_temp_sst}
@@ -421,36 +422,58 @@ corr_plot
 bedzie regresor TODO
 
 ```{r regression}
-set.seed(666)
+reg_df <- new_my_df %>% select(-X)
+inTraining <- createDataPartition(y = reg_df$length,p = 0.7,list = FALSE)
+training <- reg_df[ inTraining,]
+testing  <- reg_df[-inTraining,]
 
-inTraining <- createDataPartition(y = new_my_df$length,p = 0.7,list = FALSE)
-training <- new_my_df[ inTraining,]
-testing  <- new_my_df[-inTraining,]
-
-ctrl <- trainControl(
-    # powtórzona ocena krzyżowa
-    method = "repeatedcv",
-    # liczba podziałów
-    number = 2,
-    # liczba powtórzeń
-    repeats = 5)
+ctrl <- trainControl(method = "repeatedcv",
+                      # liczba podziałów
+                      number = 2,repeats = 5)
 
 fit <- train(length ~ .,
              data = training,
              method = "rf",
              trControl = ctrl,
              ntree = 10)
-
-fit
-
 rfClasses <- predict(fit, newdata = testing)
-rfClasses
+```
 
+##Wyniki
+```{r reg_result_print}
+fit
+fit$results
+postResample(pred = rfClasses, obs=testing$length)
+```
 
+```{r reg_plot_pred}
+reg_df_plot <- data.frame(Length = rfClasses)
+
+reg_plot <- ggplot(reg_df_plot,aes(x = 1:length(Length), y=Length)) + 
+  geom_point(alpha = 0.5, size = 0.7,color="blue") + 
+  geom_smooth(aes(y=Length,colour = "trend"), size = 2) +
+  theme_minimal() + theme(legend.position = "none") +
+  labs(x = "Czas", y = "Długość śledzia ") + 
+  ggtitle("Wykres długości śledzia od czasu - predykcja") 
+reg_plot
+```
+
+```{r reg_plot_test}
+reg_plot_test <- ggplot(testing,aes(x = 1:length(length), y=length)) + 
+  geom_point(alpha = 0.5, size = 0.7,color="blue") + 
+  geom_smooth(aes(y=length,colour = "trend"), size = 2) +
+  theme_minimal() + theme(legend.position = "none") +
+  labs(x = "Czas", y = "Długość śledzia ") + 
+  ggtitle("Wykres długości śledzia od czasu - faktyczne dane") 
+reg_plot_test
 ```
 
 #Ważność atrybutów w oparciu o regresor
 bedzie waznosc TODO
+```{r atrribute_value}
+
+#kable(tibble::rownames_to_column(varImp(fit)$importance,var="atrybut")%>%arrange(desc(Overall)))
+```
 
 #Wnioski
 bedzie podsumowanie TODO
