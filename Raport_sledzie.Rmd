@@ -4,10 +4,12 @@ author: "Adam Chojan"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
-    css: custom.css
     keep_md: yes
     number_sections: yes
     toc: yes
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
 ---
 
 ```{r setup, include=FALSE,  echo=FALSE}
@@ -40,13 +42,12 @@ normalit <- function(x){
 ```
 
 ##Wczytanie danych
-Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Po wczytaniu dokonanu również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
+Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Przy wczytaniu ustawiono tyo dla wszystkich kolumn na numerci poza kolumnami X oraz xmonth - dla nich ustawiono typ integer. Dokonano również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
 
 Dane zostały pobrane ze strony: (http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv)
 ```{r load_file, echo=TRUE,message=FALSE, cache = TRUE}
-mydata = read.csv("sledzie.csv")
+mydata = read.csv("sledzie.csv",  colClasses = c("integer","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","integer","numeric"),na.strings = c("NA","?"))
 df <- data.frame(mydata)
-df[df == '?'] <- NA
 my_df <- tbl_df(df)
 ```
 
@@ -146,15 +147,15 @@ plot_length_hist
 ###Temperatura przy powierzchni wody 
 
 ```{r polt_temp_sst}
-plot_temp <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = as.double(sst),colour="temperatura"), size=0.7) +
-  geom_smooth(aes(y=as.double(sst),colour = "temperatura trend"),method="auto",size=1.7)+
+plot_sst <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
+  geom_smooth(aes(y=sst,colour = "temperatura trend"),method="auto",size=1.7)+
   facet_wrap(~xmonth) + 
   theme_minimal() + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + 
-  labs(x = "Czas", y = "Temperatura") + ggtitle("Wykres temperatury przy powierzchni wody od czasu") 
-plot_temp
+  labs(x = "Czas", y = "Temperatura") + ggtitle("Wykres temperatury od czasu") 
+plot_sst
 ```
 ```{r plot_sst_hist}
-plot_sst_hist<- ggplot(new_my_df,aes(as.double(sst))) + geom_histogram(binwidth=5, color="darkblue", fill="lightblue") +
+plot_sst_hist<- ggplot(new_my_df,aes(sst)) + geom_histogram(binwidth=0.2, color="darkblue", fill="lightblue") +
   theme_minimal() + labs(x = "Temperatura", y = "Liczba") + ggtitle("Histogram temperatury przy powierzchni wody") 
   
 plot_sst_hist
@@ -175,7 +176,7 @@ plot_sal
 ```
 
 ```{r plot_sal_hist}
-plot_sal_hist<- ggplot(new_my_df,aes(as.double(sal))) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+plot_sal_hist<- ggplot(new_my_df,aes(sal)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
   theme_minimal() + labs(x = "Zasolenie", y = "Liczba") + ggtitle("Histogram poziomu zasolenia wody") 
   
 plot_sal_hist
@@ -212,7 +213,7 @@ plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = fbar,colour="natę�
 plot_catch
 ```
 ```{r plot_fbar_hist}
-plot_fbar_hist<- ggplot(new_my_df,aes(as.double(fbar))) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
+plot_fbar_hist<- ggplot(new_my_df,aes(fbar)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
   theme_minimal() + labs(x = "Natężenie", y = "Liczba") + ggtitle("Histogram natężenia połowów od czasu") 
   
 plot_fbar_hist
@@ -229,7 +230,7 @@ plot_totaln <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = totaln,colour="zł
 plot_totaln
 ```
 ```{r plot_totaln_hist}
-plot_totaln_hist<- ggplot(new_my_df,aes(as.double(totaln))) + geom_histogram(binwidth=100000, color="darkblue", fill="lightblue") +
+plot_totaln_hist<- ggplot(new_my_df,aes(totaln)) + geom_histogram(binwidth=100000, color="darkblue", fill="lightblue") +
   theme_minimal() + labs(x = "Złowione ryby", y = "Liczba") + ggtitle("Histogram liczby złowionych ryb od") 
   
 plot_totaln_hist
@@ -378,21 +379,14 @@ plot_lcop2_hist
 bedzie korelacja TODO
 obliczenie korelacji + wykresy
 ```{r correlation}
-#corr_df <- new_my_df%>%select(-c(X,xmonth))
-corr_plank = cor(df_norm_plank)
-corr_plank <- round(corr_plank,2)
-corr_melt <- melt(corr_plank)
-p <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") + scale_fill_gradient2(low = "red", mid = "white", high = "blue") + geom_text(aes(label=value))
-p
-corr_plank
-```
+corr_df <- new_my_df%>%select(-c(X,xmonth))
+corr <- cor(corr_df)
+corr[upper.tri(corr)]<- NA
+corr <- round(corr,2)
+corr_melt <- melt(corr)
+corr_plot <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") + scale_fill_gradient2(low = "red", mid = "white", high = "steelblue") + geom_text(aes(label=value))
+corr_plot
 
-```{r correlation_plot}
-plot_corr<- ggplot(new_my_df,aes(length,as.double(lcop1))) + geom_point() +
-  geom_smooth(method="lm",size = 2) +
-  theme_minimal() + labs(x = "Corr", y = "Corr") + ggtitle("Corr") 
-  
-plot_corr
 ```
 
 #Regresor przewidujący rozmiar śledzia

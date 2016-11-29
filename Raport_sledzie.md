@@ -24,14 +24,13 @@ library(tidyr)
 
 
 ##Wczytanie danych
-Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Po wczytaniu dokonanu również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
+Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Przy wczytaniu ustawiono tyo dla wszystkich kolumn na numerci poza kolumnami X oraz xmonth - dla nich ustawiono typ integer. Dokonano również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
 
 Dane zostały pobrane ze strony: (http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv)
 
 ```r
-mydata = read.csv("sledzie.csv")
+mydata = read.csv("sledzie.csv",  colClasses = c("integer","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","integer","numeric"),na.strings = c("NA","?"))
 df <- data.frame(mydata)
-df[df == '?'] <- NA
 my_df <- tbl_df(df)
 ```
 
@@ -41,28 +40,28 @@ Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławian
 
 Table: Tabela podsumująca zbiór danych
 
-           X             length         cfin1           cfin2            chel1            chel2            lcop1            lcop2            fbar             recr              cumf             totaln                   sst             sal            xmonth            nao         
----  --------------  -------------  --------------  --------------  ---------------  ---------------  ---------------  ---------------  ---------------  ----------------  ----------------  ----------------  --------------------  --------------  ---------------  -----------------
-     Min.   :    0   Min.   :19.0   0      :14287   0.70118: 4374   11.5    : 4787   5.67765 : 4365   23      : 4787   9.17171 : 4370   Min.   :0.0680   Min.   : 140515   Min.   :0.06833   Min.   : 144137   13.6315997001: 4359   Min.   :35.40   Min.   : 1.000   Min.   :-4.89000 
-     1st Qu.:13145   1st Qu.:24.0   0.02778: 2225   0      : 3806   2.46875 : 2241   21.67333: 3710   2.54787 : 2215   24.85867: 3709   1st Qu.:0.2270   1st Qu.: 360061   1st Qu.:0.14809   1st Qu.: 306068   14.0693330238: 3700   1st Qu.:35.51   1st Qu.: 5.000   1st Qu.:-1.89000 
-     Median :26291   Median :25.5   1.02508: 2067   0.296  : 3706   12.15192: 2109   39.56809: 2101   12.49588: 2105   41.65566: 2102   Median :0.3320   Median : 421391   Median :0.23191   Median : 539558   14.4415996823: 2080   Median :35.51   Median : 8.000   Median : 0.20000 
-     Mean   :26291   Mean   :25.3   1.21333: 1985   0.11736: 2106   6.42127 : 2062   26.81218: 2002   10.92857: 2059   45.70773: 1998   Mean   :0.3304   Mean   : 520367   Mean   :0.22981   Mean   : 514973   13.5598663683: 2010   Mean   :35.51   Mean   : 7.258   Mean   :-0.09236 
-     3rd Qu.:39436   3rd Qu.:26.5   0.33333: 1914   4.55825: 2007   19.15475: 2001   15.03   : 1941   21.23147: 1979   17.68   : 1959   3rd Qu.:0.4560   3rd Qu.: 724151   3rd Qu.:0.29803   3rd Qu.: 730351   13.694933032 : 1950   3rd Qu.:35.52   3rd Qu.: 9.000   3rd Qu.: 1.63000 
-     Max.   :52581   Max.   :32.5   (Other):28523   (Other):35047   (Other) :37827   (Other) :36907   (Other) :37784   (Other) :36853   Max.   :0.8490   Max.   :1565890   Max.   :0.39801   Max.   :1015595   (Other)      :36899   Max.   :35.61   Max.   :12.000   Max.   : 5.08000 
-     NA              NA             NA's   : 1581   NA's   : 1536   NA's    : 1555   NA's    : 1556   NA's    : 1653   NA's    : 1591   NA               NA                NA                NA                NA's         : 1584   NA              NA               NA               
+           X             length         cfin1             cfin2             chel1            chel2            lcop1              lcop2             fbar             recr              cumf             totaln             sst             sal            xmonth            nao         
+---  --------------  -------------  ----------------  ----------------  ---------------  ---------------  -----------------  ---------------  ---------------  ----------------  ----------------  ----------------  --------------  --------------  ---------------  -----------------
+     Min.   :    0   Min.   :19.0   Min.   : 0.0000   Min.   : 0.0000   Min.   : 0.000   Min.   : 5.238   Min.   :  0.3074   Min.   : 7.849   Min.   :0.0680   Min.   : 140515   Min.   :0.06833   Min.   : 144137   Min.   :12.77   Min.   :35.40   Min.   : 1.000   Min.   :-4.89000 
+     1st Qu.:13145   1st Qu.:24.0   1st Qu.: 0.0000   1st Qu.: 0.2778   1st Qu.: 2.469   1st Qu.:13.427   1st Qu.:  2.5479   1st Qu.:17.808   1st Qu.:0.2270   1st Qu.: 360061   1st Qu.:0.14809   1st Qu.: 306068   1st Qu.:13.60   1st Qu.:35.51   1st Qu.: 5.000   1st Qu.:-1.89000 
+     Median :26291   Median :25.5   Median : 0.1111   Median : 0.7012   Median : 5.750   Median :21.673   Median :  7.0000   Median :24.859   Median :0.3320   Median : 421391   Median :0.23191   Median : 539558   Median :13.86   Median :35.51   Median : 8.000   Median : 0.20000 
+     Mean   :26291   Mean   :25.3   Mean   : 0.4458   Mean   : 2.0248   Mean   :10.006   Mean   :21.221   Mean   : 12.8108   Mean   :28.419   Mean   :0.3304   Mean   : 520367   Mean   :0.22981   Mean   : 514973   Mean   :13.87   Mean   :35.51   Mean   : 7.258   Mean   :-0.09236 
+     3rd Qu.:39436   3rd Qu.:26.5   3rd Qu.: 0.3333   3rd Qu.: 1.7936   3rd Qu.:11.500   3rd Qu.:27.193   3rd Qu.: 21.2315   3rd Qu.:37.232   3rd Qu.:0.4560   3rd Qu.: 724151   3rd Qu.:0.29803   3rd Qu.: 730351   3rd Qu.:14.16   3rd Qu.:35.52   3rd Qu.: 9.000   3rd Qu.: 1.63000 
+     Max.   :52581   Max.   :32.5   Max.   :37.6667   Max.   :19.3958   Max.   :75.000   Max.   :57.706   Max.   :115.5833   Max.   :68.736   Max.   :0.8490   Max.   :1565890   Max.   :0.39801   Max.   :1015595   Max.   :14.73   Max.   :35.61   Max.   :12.000   Max.   : 5.08000 
+     NA              NA             NA's   :1581      NA's   :1536      NA's   :1555     NA's   :1556     NA's   :1653       NA's   :1591     NA               NA                NA                NA                NA's   :1584    NA              NA               NA               
 
 
 
 Table: Tabela zawierająca początkowe wiersze
 
-  X   length  cfin1     cfin2     chel1     chel2      lcop1     lcop2        fbar     recr        cumf     totaln  sst                   sal   xmonth   nao
----  -------  --------  --------  --------  ---------  --------  ---------  ------  -------  ----------  ---------  --------------  ---------  -------  ----
-  0     23.0  0.02778   0.27785   2.46875   NA         2.54787   26.35881    0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
-  1     22.5  0.02778   0.27785   2.46875   21.43548   2.54787   26.35881    0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
-  2     25.0  0.02778   0.27785   2.46875   21.43548   2.54787   26.35881    0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
-  3     25.5  0.02778   0.27785   2.46875   21.43548   2.54787   26.35881    0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
-  4     24.0  0.02778   0.27785   2.46875   21.43548   2.54787   26.35881    0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
-  5     22.0  0.02778   0.27785   2.46875   21.43548   2.54787   NA          0.356   482831   0.3059879   267380.8  14.3069330186    35.51234        7   2.8
+  X   length     cfin1     cfin2     chel1      chel2     lcop1      lcop2    fbar     recr        cumf     totaln        sst        sal   xmonth   nao
+---  -------  --------  --------  --------  ---------  --------  ---------  ------  -------  ----------  ---------  ---------  ---------  -------  ----
+  0     23.0   0.02778   0.27785   2.46875         NA   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
+  1     22.5   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
+  2     25.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
+  3     25.5   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
+  4     24.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
+  5     22.0   0.02778   0.27785   2.46875   21.43548   2.54787         NA   0.356   482831   0.3059879   267380.8   14.30693   35.51234        7   2.8
 
 
 
@@ -215,22 +214,12 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 #Korelacja między zmiennymi
 bedzie korelacja TODO
 obliczenie korelacji + wykresy
+
+```
+## Warning: Removed 91 rows containing missing values (geom_text).
+```
+
 ![](Raport_sledzie_files/figure-html/correlation-1.png)<!-- -->
-
-```
-##            X length xmonth cfin1 cfin2 chel1 chel2 lcop1 lcop2
-## X       1.00  -0.34   0.00 -0.06  0.13 -0.21 -0.02 -0.21 -0.05
-## length -0.34   1.00   0.01  0.14  0.03  0.17  0.01  0.21 -0.03
-## xmonth  0.00   0.01   1.00  0.01  0.00  0.06 -0.05  0.02 -0.04
-## cfin1  -0.06   0.14   0.01  1.00  0.44  0.30 -0.18  0.15 -0.09
-## cfin2   0.13   0.03   0.00  0.44  1.00  0.01  0.19  0.14  0.32
-## chel1  -0.21   0.17   0.06  0.30  0.01  1.00 -0.03  0.72  0.07
-## chel2  -0.02   0.01  -0.05 -0.18  0.19 -0.03  1.00  0.07  0.77
-## lcop1  -0.21   0.21   0.02  0.15  0.14  0.72  0.07  1.00  0.17
-## lcop2  -0.05  -0.03  -0.04 -0.09  0.32  0.07  0.77  0.17  1.00
-```
-
-![](Raport_sledzie_files/figure-html/correlation_plot-1.png)<!-- -->
 
 #Regresor przewidujący rozmiar śledzia
 bedzie regresor TODO
