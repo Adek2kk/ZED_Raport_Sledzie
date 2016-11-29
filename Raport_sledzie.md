@@ -186,7 +186,6 @@ Atrybut łącznego rocznego natężnia połowów w regionieprzedstawiony jako u�
 ![](Raport_sledzie_files/figure-html/polt_catch_year-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cumf_hist-1.png)<!-- -->
 
-
 ###Roczny narybek - recr
 Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają si wyjątkowe pomiary do wartości nawet 1,6mln. 
 ![](Raport_sledzie_files/figure-html/polt_fry_year-1.png)<!-- -->
@@ -194,7 +193,7 @@ Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartoś
 
 
 ##Dostepność planktonu
-Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Wykresy te podzielono na  poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Dodatkowo dodano linię trendu długości śledzia. 
+Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Są to organizmy stanowiące pożywienie śledzi oceanicznych. Wykresy te podzielono na poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Stworzono również histogramy w celu sprawdzenia rozłożenia wartości.
 
 Przed wykonaniem wykresów dokonano normalizacjo danych w przedziale [0:1] w celu ujednoliceniu wartości i ułatwieniu porównania danych.
 
@@ -203,45 +202,52 @@ df_norm_plank <- new_my_df %>% select(X,length,xmonth,cfin1:lcop2)  %>% transmut
 ```
 
 ###Calanus finmarchicus gat. 1 - cfin1
-
+Atrybut zawiera bardzo dużą liczbę wartości zbliżoną zeru w stosunku do reszty wartości. Powduję to dużą liczbę spadkóW w linii trendu. 
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cfin1_hist-1.png)<!-- -->
 
 ###Calanus finmarchicus gat. 2 - cfin2
-
+Wartości atrybutow są bardzo zróżnicowane. Widać jednak na każdym wykresie miesieczni jedno miejsce wysokiego wzorstu w okolicy 2/3 czasu. Na histogramie widać 4 wybijające się wartości.
 ![](Raport_sledzie_files/figure-html/polt_plank_cfin2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_cfin2_hist-1.png)<!-- -->
 
 ###Calanus helgolandicus gat. 1 - chel1
-
+Atrybut charakteryzuje się bardzo dużym rozrzutem wartości. Na histogramie widać jedną dużą częstość dla wartości 0,25 i jedną większą dla 0,8.
 ![](Raport_sledzie_files/figure-html/polt_plank_chel1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_chel1_hist-1.png)<!-- -->
 
 ###Calanus helgolandicus gat. 2 - chel2
-
+Atrybut ten również charakteryzuje się dużym zróżnicowaniem wartości z wyróżnieniem dwóch wartości o dużej częstości.
 ![](Raport_sledzie_files/figure-html/polt_plank_chel2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_chel2_hist-1.png)<!-- -->
 
 ###Widłonogi gat. 1 - lcop1
-
+Tak jak poprzednie atrybuty dotyczące planktonu i ten charakteryzuję się dużym rozrzutem wartośći. Histogram pokazuje rozkład podobny do równomiernego z wyjątkiem dwóch wartości o dużej częstości.
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop1-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_lcop1_hist-1.png)<!-- -->
 
 ###Widłonogi gat. 2 - lcop2
-
+Ten atrybut charakteryzuję się dużym rozrzutem wartośći. Histogram pokazuje rozkład podobny do równomiernego z wyjątkiem dwóch wartości o dużej częstości.
 ![](Raport_sledzie_files/figure-html/polt_plank_lcop2-1.png)<!-- -->
 ![](Raport_sledzie_files/figure-html/plot_lcop2_hist-1.png)<!-- -->
 
 
 #Korelacja między zmiennymi
-TODO
+Dokonano obbliczenia korelacji metodą Pearssona. Z przetwarzania wyłączono atrybut X, który jest jedynie zmienną porządkową. Na podstawie tabeli zamieszczonej poniżej można zauważyć:
 
-* text
+* najwyższe wartości dodatniej korelacji można zauważyć dla atrybutów dotyczących planktonu tj. pomiędzy lcop1 oraz chel1, lcop2 oraz chel2,
+* wysoką wartość widać dla natężenia połowów oraz rocznego natężenia połowów,
+* niższe wartości, ale nadal mówiące o powiązaniu są to: oscylacja oraz temperatura przy powierzchni - można było tego oczekiwać, jeśli składową współczynnika NAO jest temperatura,
+* ciekawy wynik korelacji można zaobserwować pomiędzy ddwoma planktonami (lcop1,chel1) oraz NAO. Jest to ujemna korelacja o wartości ok -0,5. Oznacza to odwrotną zależnośc między tymi atrybutami,
+* nawyższa bezwzględna warotść korelacji dla długości śledzi należy do korelacji z temperaturą przy powierzchni wody; jest to niewątpliwie ważne powiązanie na które będzie trzeba w dalszej analizie uwzględnić.
 
-![](Raport_sledzie_files/figure-html/correlation-1.png)<!-- -->
+
+![](Raport_sledzie_files/figure-html/correlation_plot-1.png)<!-- -->
 
 #Regresor przewidujący rozmiar śledzia
 bedzie regresor TODO
+
+
 
 #Ważność atrybutów w oparciu o regresor
 bedzie waznosc TODO

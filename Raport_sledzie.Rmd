@@ -390,16 +390,22 @@ plot_lcop2_hist
 
 
 #Korelacja między zmiennymi
-TODO
+Dokonano obbliczenia korelacji metodą Pearssona. Z przetwarzania wyłączono atrybut X, który jest jedynie zmienną porządkową. Na podstawie tabeli zamieszczonej poniżej można zauważyć:
 
-* text
-
+* najwyższe wartości dodatniej korelacji można zauważyć dla atrybutów dotyczących planktonu tj. pomiędzy lcop1 oraz chel1, lcop2 oraz chel2,
+* wysoką wartość widać dla natężenia połowów oraz rocznego natężenia połowów,
+* niższe wartości, ale nadal mówiące o powiązaniu są to: oscylacja oraz temperatura przy powierzchni - można było tego oczekiwać, jeśli składową współczynnika NAO jest temperatura,
+* ciekawy wynik korelacji można zaobserwować pomiędzy ddwoma planktonami (lcop1,chel1) oraz NAO. Jest to ujemna korelacja o wartości ok -0,5. Oznacza to odwrotną zależnośc między tymi atrybutami,
+* nawyższa bezwzględna warotść korelacji dla długości śledzi należy do korelacji z temperaturą przy powierzchni wody; jest to niewątpliwie ważne powiązanie na które będzie trzeba w dalszej analizie uwzględnić.
 ```{r correlation, message=FALSE}
 corr_df <- new_my_df%>%select(-X)
 corr <- cor(corr_df)
 corr[upper.tri(corr)]<- NA
 corr <- round(corr,2)
 corr_melt <- melt(corr)
+```
+
+```{r correlation_plot}
 corr_plot <- ggplot(corr_melt, aes(Var1, Var2)) + geom_tile(aes(fill = value), colour = "white") +
   scale_fill_gradient2(low = "red", mid = "white", high = "steelblue",guide_legend(title="Korelacja Pearsona") ) + 
   geom_text(aes(label=value), na.rm=TRUE) + 
@@ -413,6 +419,10 @@ corr_plot
 
 #Regresor przewidujący rozmiar śledzia
 bedzie regresor TODO
+
+```{r regression}
+
+```
 
 #Ważność atrybutów w oparciu o regresor
 bedzie waznosc TODO
