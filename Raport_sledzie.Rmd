@@ -22,14 +22,25 @@ Tu będzie krótki opis
 
 #Biblioteki
 ```{r library, echo=TRUE,message=FALSE, warnings = FALSE}
+#Generacja raportu
 library(knitr)
+
+#Operacje na danych
 library(dplyr)
+library(tidyr)
+library(reshape2)
+
+#Wartości brakujące
+library(mice)
+
+#Wykresy
 library(ggplot2)
 library(hexbin)
 library(plotly)
-library(reshape2)
-library(mice)
 library(tidyr)
+
+#Regresja
+library(caret)
 ```
 
 ```{r help_function}
@@ -127,7 +138,7 @@ TODO
 
 ##Długość śledzia - length
 
-Na podstawie wykresów można dojśc do wniosku, że długość wyłowionego śledzia zwiekszała się do na przestrzenia lat do próbki eksperymentu ok. 15 tysięcy. Następnie widać stopniowy spadek długości śledzia, aż do końca zebranych danych.
+Długość śledzi wyrażona został w centymetrach. Z pierwszego wykresu można odczytać wzrost długość do jednostek czasu ok 17-18 tysięcy, następnie rozpoczyna się spadek tej wartości. Wykres heksalny ukazuje większe skupienie śledzi o długości 26cm i wiecej do jednostki ok 20 tysięcy. Ostatni wykres jest histogramem, który przedstawia rozkład zbliżony do normalnego. Widać na nim przewagę wartości około 25cm.
 ```{r plot_sledzie_time,  cache=TRUE}
 plot_length <- ggplot(new_my_df,aes(X,length))  + geom_line(alpha=0.3) + stat_smooth(method="auto",size = 2)
 plot_length <- plot_length + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + labs(x="Czas", y="Długość śledzia") + theme_minimal() 
@@ -141,7 +152,7 @@ ggplotly(plot_length_hex)
 
 ```{r plot_sledzie_hist}
 plot_length_hist<- ggplot(new_my_df,aes(length)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Długość", y = "Liczba śledzi") + ggtitle("Histogram długości śledzia") 
+  theme_minimal() + labs(x = "Długość", y = "Częstość") + ggtitle("Histogram długości śledzia") 
   
 plot_length_hist
 ```
@@ -149,7 +160,7 @@ plot_length_hist
 ##Parametry morza
 
 ###Temperatura przy powierzchni wody - sst
-
+Atrybut zawiera temperaturę przy powierzchni wody mierzoną w stopniach Celsjusza.Pierwszy wykres przedstawia zmienność temperatury w czasie z podzieleniem na miesiąće w roku. Można tu odczytać wzrost temperatur wraz z czasem, niezależnie od miesiąca. Histogram przedstawia częste wartości w oklicach 13,5-13,75 oraz większą liczbę temperatur wyższych z dostępnego zakresu.
 ```{r polt_temp_sst}
 plot_sst <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
   geom_smooth(aes(y=sst,colour = "temperatura trend"),method="auto",size=1.7)+
@@ -160,12 +171,13 @@ plot_sst
 ```
 ```{r plot_sst_hist}
 plot_sst_hist<- ggplot(new_my_df,aes(sst)) + geom_histogram(binwidth=0.2, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Temperatura", y = "Liczba") + ggtitle("Histogram temperatury przy powierzchni wody") 
+  theme_minimal() + labs(x = "Temperatura", y = "Częstość") + ggtitle("Histogram temperatury przy powierzchni wody") 
   
 plot_sst_hist
 ```
 
 ###Poziom zasolenia wody - sal
+Atrybut ten przestawia poziom zasolenia wody morskiej wyrażony w Knudsen ppt. Przedział wartości jest bardzo wąski - [35,40;35,60]. Warto tu dodać, że poziom zasolenia wód morskich i oceanicznych to 31 (np. Arktyka) do 39 (np. Morze Śródziemne). Wykresy czasoe pokazują raczej stały poziom zasolenia z małymi wyjątakami. Należy jednak pamiętać żę zmieny pziiomy zasolenia to najwyżej 0,1 jednostki. Histogram pokazuje ogromną przewagę wartości 35,5 na innymi.
 ```{r df_salt}
 df_salt <- new_my_df %>% select(X,length,xmonth,sal)
 ```
@@ -181,13 +193,14 @@ plot_sal
 
 ```{r plot_sal_hist}
 plot_sal_hist<- ggplot(new_my_df,aes(sal)) + geom_histogram(binwidth=0.05, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Zasolenie", y = "Liczba") + ggtitle("Histogram poziomu zasolenia wody") 
+  theme_minimal() + labs(x = "Zasolenie", y = "Częstość") + ggtitle("Histogram poziomu zasolenia wody") 
   
 plot_sal_hist
 ```
 
 ###Oscylacja północnoatlantycka - nao
-
+Atrybut dotyczy globalnej cyrkulacji powietrza i wody oceanicznej; ujawnia się poprzez fluktuacje takich parametrów, jak ciśnienie, temperatura, prędkość wiatru, ilość opadów. 
+Wykres czasu przedstawia początkową wartość bliską zeru lub dodatnią w zależności od miesiąca, następnie dochodzi do spadku nie zależnie o miesiąca w roku, po czym można zauważyć wzrost do warości bliskich zeru lub dodatnich. Histogram ukazuje duże zróżnicowanie atrybuty niezależnie od wartości.
 
 ```{r polt_nao_nao}
 plot_nao <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = nao,colour="nao"), size=0.7) +
@@ -199,7 +212,7 @@ plot_nao
 ```
 ```{r plot_nao_hist}
 plot_nao_hist<- ggplot(new_my_df,aes(nao)) + geom_histogram(binwidth=0.5, color="darkblue", fill="lightblue") +
-  theme_minimal() + labs(x = "Nao", y = "Liczba śledzi") + ggtitle("Histogram NAO") 
+  theme_minimal() + labs(x = "Nao", y = "Częstość") + ggtitle("Histogram NAO") 
   
 plot_nao_hist
 ```
@@ -383,7 +396,6 @@ plot_lcop2_hist
 TODO
 
 * text
-* korelacja parametry
 
 ```{r correlation, message=FALSE}
 corr_df <- new_my_df%>%select(-X)
@@ -408,5 +420,5 @@ bedzie regresor TODO
 #Ważność atrybutów w oparciu o regresor
 bedzie waznosc TODO
 
-#Podsumowanie
+#Wnioski
 bedzie podsumowanie TODO
