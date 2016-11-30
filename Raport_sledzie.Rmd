@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = FALSE,message=FALSE,cache=TRUE)
 
 
 #Wprowadzenie
-Celem ninjszego raportu była odpowiedź na pytanie co jest główną przyczna spadku długości śledzi oceanicznych. W tym celu przeprowadzono szereg operacji i analiz na zbiorze danych zebrancyh z ostatnich 60 lat. Pierwszym krokiem było wypełnienie brakujacych wartości. Natępnie dokonano analiz dostępnych atrybutów wraz z wykresami przebiegóW czasowych oraz histogramów. Natępnie obliczono korelacje pomiędzy atrybutami. Najwyższe wartości bezwzględne otrzymano dla atrybutami dotyczącymi planktonu. Następnie stworzono regresor liniowy wraz z oceną ważności atrybutów. Na podstawie wszystkich króków stwierdzono, że długość śledzia jest zależna od zagęszczenia planktonu w wodzie. Dla małej wartości zagęszczenia, śledzie osiągają mniejsze długości. Sam planton jest wrażliwy na zmianę poziomu zasolenia oraz temperatury przy powierzchni morza. Wartości dla których zagęszczenie jest wysokie to 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
+Celem ninjszego raportu była odpowiedź na pytanie co jest główną przyczna spadku długości śledzi oceanicznych. W tym celu przeprowadzono szereg operacji i analiz na zbiorze danych zebrancyh z ostatnich 60 lat. Pierwszym krokiem było wypełnienie brakujacych wartości. Natępnie dokonano analiz dostępnych atrybutów wraz z wykresami przebiegów czasowych oraz histogramów. Natępnie obliczono korelacje pomiędzy atrybutami. Najwyższe wartości bezwzględne otrzymano między atrybutami dotyczącymi planktonu. Następnie stworzono regresor liniowy wraz z oceną ważności atrybutów. Na podstawie wszystkich kroków stwierdzono, że długość śledzia jest zależna od zagęszczenia planktonu w wodzie. Dla małej wartości zagęszczenia, śledzie osiągają mniejsze długości. Sam planton jest wrażliwy na zmianę poziomu zasolenia oraz temperatury przy powierzchni morza. Wartości dla których zagęszczenie jest wysokie to 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
 
 #Biblioteki
 ```{r library, echo=TRUE,message=FALSE, warnings = FALSE}
@@ -50,7 +50,7 @@ normalit <- function(x){
 ```
 
 ##Wczytanie danych
-Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Przy wczytaniu ustawiono tyo dla wszystkich kolumn na numerci poza kolumnami X oraz xmonth - dla nich ustawiono typ integer. Dokonano również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
+Dane zostały wczytane z pliku csv znajdującego się lokalnie na dysku do typu data frame. Przy wczytaniu ustawiono typ dla wszystkich kolumn na numeric poza kolumnami X oraz xmonth - dla nich ustawiono typ integer. Dokonano również zmiany znaków symbolizujących brakujące dane w zestawie - ? na symbol NA w celu ułatwienia późniejszych operacji podczas analizy wartości brakujących. Ostatecznie dokonano konwersji na typ df_tbl pakietu dplyr.
 
 Dane zostały pobrane ze strony: (http://www.cs.put.poznan.pl/dbrzezinski/teaching/zed/sledzie.csv)
 ```{r load_file, echo=TRUE,message=FALSE, cache = TRUE}
@@ -61,7 +61,7 @@ my_df <- tbl_df(df)
 
 #Wstępne rozpoznanie
 ##Ogólne statystyki dla danych
-Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi. Dane zawierają nie całe 53 tysiące wpisów dotyczących śledzie. onieżej zebrano podstawowe statystyki dla zbioru.
+Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi. Dane zawierają niecałe 53 tysiące wpisów dotyczących śledzie. onieżej zebrano podstawowe statystyki dla zbioru.
 ```{r introduction}
 kable(summary(my_df), caption = "Tabela podsumująca zbiór danych")
 
@@ -72,7 +72,7 @@ kable(uniq, caption = "Tabela unikalnych wartości")
 ```
 
 ##Powtarzalność wyników
-W celu zachowania powtarzalności wyników ustawion ziarna generatora na:
+W celu zachowania powtarzalności wyników ustawiono ziarno generatora na:
 ```{r seed_init, echo=TRUE}
 set.seed(666)
 ```
@@ -134,10 +134,10 @@ kable(summary(new_my_df, caption = "Tabela podstawowych statystyk po wypełnieni
 
 
 #Analiza atrybutów
-Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejzy atrybut - długość śledzia.
+Zestaw danych zawiera 14 atrybutów. Dotyczą one parametrów morza - temperatura, zasolenie, oscylacja, dostępność planktonu, informacje dotyczące połowów oraz najważniejszy atrybut - długość śledzia.
 
 ##Długość śledzia - length
-Długość śledzi wyrażona został w centymetrach. Z pierwszego wykresu można odczytać wzrost długość do jednostek czasu ok 17-18 tysięcy, następnie rozpoczyna się spadek tej wartości. Wykres heksalny ukazuje większe skupienie śledzi o długości 26cm i wiecej do jednostki ok 20 tysięcy. Ostatni wykres jest histogramem, który przedstawia rozkład zbliżony do normalnego. Widać na nim przewagę wartości około 25cm.
+Długość śledzi wyrażona została w centymetrach. Z pierwszego wykresu można odczytać wzrost długości do jednostek czasu ok 17-18 tysięcy, następnie rozpoczyna się spadek tej wartości. Wykres heksalny ukazuje większe skupienie śledzi o długości 26cm i wiecej do jednostki ok 20 tysięcy. Ostatni wykres jest histogramem, który przedstawia rozkład zbliżony do normalnego. Widać na nim przewagę wartości około 25cm.
 ```{r plot_sledzie_time,  cache=TRUE}
 plot_length <- ggplot(new_my_df,aes(X,length))  + geom_line(alpha=0.3) + stat_smooth(method="auto",size = 2)
 plot_length <- plot_length + theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + labs(x="Czas", y="Długość śledzia") + theme_minimal() 
@@ -158,7 +158,7 @@ plot_length_hist
 
 ##Parametry morza
 ###Temperatura przy powierzchni wody - sst
-Atrybut zawiera temperaturę przy powierzchni wody mierzoną w stopniach Celsjusza.Pierwszy wykres przedstawia zmienność temperatury w czasie z podzieleniem na miesiąće w roku. Można tu odczytać wzrost temperatur wraz z czasem, niezależnie od miesiąca. Histogram przedstawia częste wartości w oklicach 13,5-13,75 oraz większą liczbę temperatur wyższych z dostępnego zakresu.
+Atrybut zawiera temperaturę przy powierzchni wody mierzoną w stopniach Celsjusza. Pierwszy wykres przedstawia zmienność temperatury w czasie z podzieleniem na miesiąće w roku. Można tu odczytać wzrost temperatur wraz z czasem, niezależnie od miesiąca. Histogram przedstawia częste wartości w okolicach 13,5-13,75 oraz większą liczbę temperatur wyższych z dostępnego zakresu.
 ```{r polt_temp_sst}
 plot_sst <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = sst,colour="temperatura"), size=0.7) +
   geom_smooth(aes(y=sst,colour = "temperatura trend"),method="auto",size=1.7)+
@@ -175,7 +175,7 @@ plot_sst_hist
 ```
 
 ###Poziom zasolenia wody - sal
-Atrybut ten przestawia poziom zasolenia wody morskiej wyrażony w Knudsen ppt. Przedział wartości jest bardzo wąski - [35,40;35,60]. Warto tu dodać, że poziom zasolenia wód morskich i oceanicznych to 31 (np. Arktyka) do 39 (np. Morze Śródziemne). Wykresy czasoe pokazują raczej stały poziom zasolenia z małymi wyjątakami. Należy jednak pamiętać żę zmieny pziiomy zasolenia to najwyżej 0,1 jednostki. Histogram pokazuje ogromną przewagę wartości 35,5 na innymi.
+Atrybut ten przestawia poziom zasolenia wody morskiej wyrażony w Knudsen ppt. Przedział wartości jest bardzo wąski - [35,40;35,60]. Wykresy czasowe pokazują raczej stały poziom zasolenia z małymi wyjątakami. Histogram pokazuje ogromną przewagę wartości 35,5 na innymi.
 ```{r df_salt}
 df_salt <- new_my_df %>% select(X,length,xmonth,sal)
 ```
@@ -198,7 +198,7 @@ plot_sal_hist
 
 ###Oscylacja północnoatlantycka - nao
 Atrybut dotyczy globalnej cyrkulacji powietrza i wody oceanicznej; ujawnia się poprzez fluktuacje takich parametrów, jak ciśnienie, temperatura, prędkość wiatru, ilość opadów. 
-Wykres czasu przedstawia początkową wartość bliską zeru lub dodatnią w zależności od miesiąca, następnie dochodzi do spadku nie zależnie o miesiąca w roku, po czym można zauważyć wzrost do warości bliskich zeru lub dodatnich. Histogram ukazuje duże zróżnicowanie atrybuty niezależnie od wartości.
+Wykres czasu przedstawia początkową wartość bliską zeru lub dodatnią w zależności od miesiąca, następnie dochodzi do spadku niezależnie od miesiąca w roku, po czym można zauważyć wzrost do warości bliskich zeru lub dodatnich. Histogram ukazuje duże zróżnicowanie atrybuty niezależnie od wartości.
 
 ```{r polt_nao_nao}
 plot_nao <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = nao,colour="nao"), size=0.7) +
@@ -253,7 +253,7 @@ plot_totaln_hist
 ```
 
 ###Łączne roczne natężenie połowów w regionie - cumf
-Atrybut łącznego rocznego natężnia połowów w regionieprzedstawiony jako ułamek pozostawionego narybku. Wykres przebiegu czasowego pokazuje wzrost z 0,1 do ok 0,3 w przeciągu kolejnych lat. 
+Atrybut łącznego rocznego natężnia połowów w regionie przedstawiony jako ułamek pozostawionego narybku. Wykres przebiegu czasowego pokazuje wzrost z 0,1 do ok 0,3 w przeciągu kolejnych lat. 
 ```{r polt_catch_year}
 plot_catch <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = cumf,colour="roczne natężenie"), size=1) +
   geom_smooth(aes(y=cumf,colour = "roczne natężenie trend"),method="auto",size=1.7)+
@@ -270,7 +270,7 @@ plot_cumf_hist
 ```
 
 ###Roczny narybek - recr
-Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają si wyjątkowe pomiary do wartości nawet 1,6mln. 
+Atrybut rocznego narybka przedstawia liczbę śledzi. Główne skupienie wartości występuje w przedziale 200-900 tysięcy, chociaż zdarzają się wyjątkowe pomiary do wartości nawet 1,6mln. 
 ```{r polt_fry_year}
 plot_fry <- ggplot(new_my_df,aes(X)) +  geom_point(aes(y = recr,colour="roczny narybek"), size=1) +
   geom_smooth(aes(y=recr,colour = "roczny narybek trend"),method="auto",size=1.7)+
@@ -288,7 +288,7 @@ plot_recr_hist
 
 
 ##Dostepność planktonu
-Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Są to organizmy stanowiące pożywienie śledzi oceanicznych. Wykresy te podzielono na poszczególne miesiące w celu ułatwienia analizy czy zagęszczenie planktonu zmieniało się w sposób zauważalny na przestrzeni 60 lat. Stworzono również histogramy w celu sprawdzenia rozłożenia wartości.
+Poniżej zebrano wykresy przedstawiające dostępność planktonu 3 typów po dwa gatunki każdy. Są to organizmy stanowiące pożywienie śledzi oceanicznych. Wykresy te podzielono na poszczególne miesiące w celu ułatwienia analizy. Stworzono również histogramy w celu sprawdzenia rozłożenia wartości.
 
 Przed wykonaniem wykresów dokonano normalizacjo danych w przedziale [0:1] w celu ujednoliceniu wartości i ułatwieniu porównania danych.
 ```{r nor_plank, echo=TRUE}
@@ -314,7 +314,7 @@ plot_cfin1_hist
 ```
 
 ###Calanus finmarchicus gat. 2 - cfin2
-Wartości atrybutow są bardzo zróżnicowane. Widać jednak na każdym wykresie miesieczni jedno miejsce wysokiego wzorstu w okolicy 2/3 czasu. Na histogramie widać 4 wybijające się wartości.
+Wartości atrybutow są bardzo zróżnicowane. Widać jednak na każdym wykresie miesiecznym jedno miejsce wysokiego wzorstu w okolicy 2/3 czasu. Na histogramie widać 4 wybijające się wartości.
 ```{r polt_plank_cfin2}
 plot_plank <- ggplot(df_norm_plank,aes(X)) +  geom_point(aes(y = cfin2,colour="plankton"), size=0.7) +
   geom_smooth(aes(y=cfin2,colour = "plankton trend"),method="auto",size=1.7)+
@@ -396,8 +396,8 @@ Dokonano obbliczenia korelacji metodą Pearssona. Z przetwarzania wyłączono at
 * najwyższe wartości dodatniej korelacji można zauważyć dla atrybutów dotyczących planktonu tj. pomiędzy lcop1 oraz chel1, lcop2 oraz chel2,
 * wysoką wartość widać dla natężenia połowów oraz rocznego natężenia połowów,
 * niższe wartości, ale nadal mówiące o powiązaniu są to: oscylacja oraz temperatura przy powierzchni - można było tego oczekiwać, jeśli składową współczynnika NAO jest temperatura,
-* ciekawy wynik korelacji można zaobserwować pomiędzy ddwoma planktonami (lcop1,chel1) oraz NAO. Jest to ujemna korelacja o wartości ok -0,5. Oznacza to odwrotną zależnośc między tymi atrybutami,
-* nawyższa bezwzględna warotść korelacji dla długości śledzi należy do korelacji z temperaturą przy powierzchni wody; jest to niewątpliwie ważne powiązanie na które będzie trzeba w dalszej analizie uwzględnić.
+* ciekawy wynik korelacji można zaobserwować pomiędzy dwoma planktonami (lcop1,chel1) oraz NAO. Jest to ujemna korelacja o wartości ok -0,5. Oznacza to odwrotną zależnośc między tymi atrybutami,
+* najwyższa bezwzględna warotść korelacji dla długości śledzi należy do korelacji z temperaturą przy powierzchni wody; jest to niewątpliwie ważne powiązanie na które będzie trzeba w dalszej analizie uwzględnić.
 ```{r correlation, message=FALSE}
 corr_df <- new_my_df%>%select(-X)
 corr <- cor(corr_df)
@@ -419,9 +419,9 @@ corr_plot
 ```
 
 #Regresor przewidujący rozmiar śledzia
-W ramach analizy danych stworzono regresor w celu stowarzenia predykcji rozmiaru śledzia. Regresor został stworzony na podstawie poniższych parametrów:
+W ramach analizy danych stworzono regresor w celu stworzenia predykcji rozmiaru śledzia. Regresor został stworzony na podstawie poniższych parametrów:
 
-* dane zostaly pozbawione kolumn X oraz month; pierwsza zawiera liczby porządkowe i może zaburzyć mechanizm budowy regresora, drugi zawiera miesiać połówu, który nie powinien mieć znaczenia ze względu na to, że badane są zawsze 3-letnie śledzie (bez tego założenia mierzone mogły być dużo młodsze śledzie, czyli krótsze),
+* dane zostały pozbawione kolumn X oraz month; pierwsza zawiera liczby porządkowe i może zaburzyć mechanizm budowy regresora, drugi zawiera miesiać połówu, który nie powinien mieć znaczenia ze względu na to, że badane są zawsze 3-letnie śledzie (bez tego założenia mierzone mogły być dużo młodsze śledzie, czyli krótsze),
 * zbiór podzielono na podzbiór uczący i testowy w stosunku 7:3,
 * podział na podzbiór uczący i walidacyjny dokonan metodą krzyżowej walidacji z liczbą podziałów 2 oraz liczbą powtórzeń 5,
 * regresor został stworzony metodą random forest o liczbie drzew (ntree) równej 10,
@@ -447,7 +447,7 @@ rfClasses <- predict(fit, newdata = testing)
 ```
 
 ##Wyniki
-W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę (wybrany został model o mtry=2):
+W wyniku działań na podzbiorze testowym otrzymano poniższą tabelę (wybrany został model o mtry=2):
 
 ```{r reg_result_print}
 kable(fit$results, caption="Tabela wyników z podzbioru uczącego")
@@ -490,13 +490,13 @@ reg_plot_test
 
 
 #Ważność atrybutów w oparciu o regresor
-W zamieszczeonej poniżej tabeli znalażły się wyniki oceny ważności atrybutów. Mają one pomóc w odpowiedzi na pytanie: dlaczego śledzie oceaniczne w pewnym momencie zaczeły maleć? Z tabeli można wywnioskować że największy wpływ na to mają planktony (w szczególnośći lcop1 i lcop2), zasolenie wody i w mniejszym znaczeniu temperatura przy powierzchni wody. Majać tę wiedzę należy sprawdzić w jaki sposób zmieniały się te atrybuty, by stwierdzić jakie zmiany w nich spowodowały spadek długości śledzia. Ciekawym jest wysoka pozycja poziomu zasolenia, która wykazuje bardzo niską zmienność wartości, a jednak na tyle znaczną, by wpłynąć na długość śledzia.
+W zamieszczeonej poniżej tabeli znalazły się wyniki oceny ważności atrybutów. Mają one pomóc w odpowiedzi na pytanie: co jest główną przyczyną zmiany długości śledzi. Z tabeli można wywnioskować, że największy wpływ na to mają planktony (w szczególności lcop1 i lcop2), zasolenie wody i w mniejszym znaczeniu temperatura przy powierzchni wody. Majac tę wiedzę należy sprawdzić w jaki sposób zmieniały się te atrybuty, by stwierdzić jakie zmiany w nich spowodowały spadek długości śledzia. Ciekawym jest wysoka pozycja poziomu zasolenia, która wykazuje bardzo niską zmienność wartości, a jednak na tyle znaczną, by wpłynąć na długość śledzia.
 ```{r atrribute_value}
 kable(tibble::rownames_to_column(varImp(fit)$importance,var="Atrybut")%>%arrange(desc(Overall)), caption = "Tabela z oceną ważnności atrybutów")
 ```
 
 ## Zależność długości śledzia od zasolenia
-Wykresy przedstawiają spadek długości śledzia w styuacji, gdy poziom zasolenia zaczyna zmieniać wartość z 35,5 na wyższą lub niższą. Widać tu wyraźną zależność. Trudno jednak jednoznacznie stwierdzić czy dla śledzia, aż tak ważnym czynnikiem może być tak niewielka różnica zasolenia wody. Wydaje się, że zasolenie wody jest przyczyną zmian wartości innego atrybutu, który może być bardziej wyczulony na taką zmianę.
+Wykresy przedstawiają spadek długości śledzia w sytuacji, gdy poziom zasolenia zaczyna zmieniać wartość z 35,5 na wyższą lub niższą. Widać tu wyraźną zależność. Trudno jednak jednoznacznie stwierdzić czy dla śledzia, aż tak ważnym czynnikiem może być tak niewielka różnica zasolenia wody. Wydaje się, że zasolenie wody jest przyczyną zmian wartości innego atrybutu, który może być bardziej wyczulony na taką zmianę.
 ```{r fin_plot_slen}
 slen_df <- new_my_df %>% select (X,sal,length)
 slen_df2<-melt(slen_df,id.vars='X')
@@ -511,7 +511,7 @@ fin_plot_slen
 ```
 
 ## Zależność długości śledzia od temparatury
-Na wykresach wyraźnie widać, że w temperaturze powyżej 14 stopni Celsjusza długość śledzia jest mniejsza, niż poniżej tej wartości. Można założyć, że temperatura przy pwoierzchni morza ma wpływ na to jak rozwija się śledź. 
+Na wykresach wyraźnie widać, że w temperaturze powyżej 14 stopni Celsjusza długość śledzia jest mniejsza, niż poniżej tej wartości. Można założyć, że temperatura przy powierzchni morza ma wpływ na to jak rozwija się śledź. 
 ```{r fin_plot_tlen}
 tlen_df <- new_my_df %>% select (X,sst,length)
 tlen_df2<-melt(tlen_df,id.vars='X')
@@ -527,7 +527,7 @@ fin_plot_tlen
 
 ## Zależność długości śledzia od planktonu
 
-Z wykresóW zamieszczonych poniżej można odczytać, że długość śledzia zmniejsza się wraz ze zmniejszaniem się zagęszczenia planktonu - na wykresie widoczne przez odcień czerni dla punktów. Widać to w szczególnościdla cfin2, chel1 oraz obu lcop. Wynika z nich jasno, że mniejsza ilość pożywienia wpływa na długość śledzia oceanicznego. Warto, jednak sprawdzić, co wpływa na zmniejszone zagęszczenie planktonu, dlatego dwa kolejne podpunkty analizy ważności atrybutów będą poświęcone wyróżnionym wyżej czterem planktonom.
+Z wykresóW zamieszczonych poniżej można odczytać, że długość śledzia zmniejsza się wraz ze zmniejszaniem się zagęszczenia planktonu - na wykresie widoczne przez odcień czerni dla punktów. Widać to w szczególnościdla cfin2, chel1 oraz obu lcop. Wynika z nich jasno, że mniejsza ilość pożywienia wpływa na długość śledzia oceanicznego. Warto, jednak sprawdzić, co wpływa na zmniejszone zagęszczenie planktonu, dlatego dwa kolejne podpunkty analizy ważności atrybutów będą poświęcone wyróżnionym wyżej planktonom.
 
 ```{r fin_plot_lplank}
 plank_df <- new_my_df %>% select (X,length,cfin1:cfin2)
@@ -573,7 +573,7 @@ fin_plot_lplank
 
 
 ## Zależność planktonu od zasolenia
-Z wykresow można odczytać że optymalna wartość dla rozwoju planktonu to około 35,50 jednostki. Dla tego poziomu widać wyższe zagęszczenie niż, gdy zasolenie jest powyżej lub poniźej tej wartości. Widać to od 30 tysięcznej jednostki czasu. Takie skoki zasolenia mogły spowodować stowrzenie niekorzystnego środowiska dla planktonu.
+Z wykresów można odczytać, że optymalna wartość dla rozwoju planktonu to około 35,50 jednostki. Dla tego poziomu widać wyższe zagęszczenie niż, gdy zasolenie jest powyżej lub poniźej tej wartości. Widać to od 30 tysięcznej jednostki czasu. Takie skoki zasolenia mogły spowodować stowrzenie niekorzystnego środowiska dla planktonu.
 ```{r fin_plot_splank1}
 plank_df <- new_my_df %>% select (X,sal,cfin2,chel1)
 plank_df2<-melt(plank_df,id.vars=c('X','sal'))
@@ -634,6 +634,6 @@ fin_plot_tplank
 
 
 #Wnioski
-Zbierając wszystkie informacje z każdego etapu można spróbować odpowiedzieć na pytanie - co jest główną przyczyną spadku długości śledzi oceanicznych? Analityk stwierdza, że jest to spadek zagęszczenia planktonu w morzu co powoduje trudniejszy dostęp śledzia do pożywienia. Na przedstawionych w ostatniej części raportu wykresach widać zależność niskego poziomu planktonu oraz długości śledzi. Jest to przyczna dosyć łatwa do zrozumienia, ponieważ przy braku dostatecznej ilości składników odżywczych organizm ma ograniczone możliwości rozwoju.
+Zbierając wszystkie informacje z każdego etapu można spróbować odpowiedzieć na pytanie - co jest główną przyczyną spadku długości śledzi oceanicznych? Analityk stwierdza, że jest to spadek zagęszczenia planktonu w morzu, co powoduje trudniejszy dostęp śledzia do pożywienia. Na przedstawionych w ostatniej części raportu wykresach widać zależność niskego poziomu planktonu oraz długości śledzi. Jest to przyczna dosyć łatwa do zrozumienia, ponieważ przy braku dostatecznej ilości składników odżywczych organizm ma ograniczone możliwości rozwoju.
 Na podstawie zebranych danych udało się również znaleźć możliwą przycznę spadku zagęszczenia planktonu. Jest to zmiana poziomu zasolenia oraz temperatury, w której może on się rozwijać. Z danych wynika, że optimum (wartości przy których zagęszczenie było najwyższe) to odpowiednio 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
 Na koniec warto dodać, że przeprowadzona analiza jest tylko wstępem do dalszych badań, w których będzie można się sprawdzić prawdziwość wniosków zawartych w tym raporcie na drodze eksperymentów na śledziach oraz planktonie.
