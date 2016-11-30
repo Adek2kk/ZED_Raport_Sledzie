@@ -247,60 +247,45 @@ Dokonano obbliczenia korelacji metodą Pearssona. Z przetwarzania wyłączono at
 ![](Raport_sledzie_files/figure-html/correlation_plot-1.png)<!-- -->
 
 #Regresor przewidujący rozmiar śledzia
-bedzie regresor TODO
+W ramach analizy danych stworzono regresor w celu stowarzenia predykcji rozmiaru śledzia. Regresor został stworzony na podstawie poniższych parametrów:
+
+* dane zostaly pozbawione kolumn X oraz month; pierwsza zawiera liczby porządkowe i może zaburzyć mechanizm budowy regresora, drugi zawiera miesiać połówu, który nie powinien mieć znaczenia ze względu na to, że badane są zawsze 3-letnie śledzie (bez tego założenia mierzone mogły być dużo młodsze śledzie, czyli krótsze),
+* zbiór podzielono na podzbiór uczący i testowy w stosunku 7:3,
+* podział na podzbiór uczący i walidacyjny dokonan metodą krzyżowej walidacji z liczbą podziałów 2 oraz liczbą powtórzeń 5,
+* regresor został stworzony metodą random forest o liczbie drzew (ntree) równej 10,
+* ocenę trafności regresji dokonano na podstawie metryk RMSE oraz $R^2$.
 
 
 
 ##Wyniki
+W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę:
 
-```
-## Random Forest 
-## 
-## 36810 samples
-##    14 predictor
-## 
-## No pre-processing
-## Resampling: Cross-Validated (2 fold, repeated 5 times) 
-## Summary of sample sizes: 18405, 18405, 18405, 18405, 18405, 18405, ... 
-## Resampling results across tuning parameters:
-## 
-##   mtry  RMSE      Rsquared 
-##    2    1.170950  0.4975520
-##    8    1.147149  0.5178329
-##   14    1.150263  0.5157269
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final value used for the model was mtry = 8.
-```
 
-```
-##   mtry     RMSE  Rsquared      RMSESD  RsquaredSD
-## 1    2 1.170950 0.4975520 0.006474751 0.003999296
-## 2    8 1.147149 0.5178329 0.006287739 0.004018928
-## 3   14 1.150263 0.5157269 0.005294196 0.003610304
-```
+Table: Tabela wyników z podzbioru uczącego
 
-```
-##      RMSE  Rsquared 
-## 1.1405906 0.5251964
-```
+ mtry       RMSE    Rsquared      RMSESD   RsquaredSD
+-----  ---------  ----------  ----------  -----------
+    2   1.188576   0.4822817   0.0065679    0.0038027
+    7   1.189070   0.4818645   0.0066612    0.0039318
+   13   1.189665   0.4813462   0.0065985    0.0038748
+
+Wyniki dla zbioru testowego:
+
+
+---------  ----------
+RMSE        1.1889971
+Rsquared    0.4840395
+---------  ----------
+
+##Wykresy przedstawiający wartości rzeczywiste i wartości uzyske z regresji
 
 ![](Raport_sledzie_files/figure-html/reg_plot_pred-1.png)<!-- -->
 
 ![](Raport_sledzie_files/figure-html/reg_plot_test-1.png)<!-- -->
 
+
+
 #Ważność atrybutów w oparciu o regresor
-bedzie waznosc TODO
-
- length     cfin1     cfin2     chel1      chel2     lcop1      lcop2    fbar     recr        cumf     totaln        sst        sal   nao
--------  --------  --------  --------  ---------  --------  ---------  ------  -------  ----------  ---------  ---------  ---------  ----
-   23.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-   22.5   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-   25.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-   25.5   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-   24.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-   22.0   0.02778   0.27785   2.46875   21.43548   2.54787   26.35881   0.356   482831   0.3059879   267380.8   14.30693   35.51234   2.8
-
 
 
 atrybut      Overall

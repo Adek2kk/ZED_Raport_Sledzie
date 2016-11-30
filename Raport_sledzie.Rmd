@@ -419,7 +419,13 @@ corr_plot
 ```
 
 #Regresor przewidujący rozmiar śledzia
-bedzie regresor TODO
+W ramach analizy danych stworzono regresor w celu stowarzenia predykcji rozmiaru śledzia. Regresor został stworzony na podstawie poniższych parametrów:
+
+* dane zostaly pozbawione kolumn X oraz month; pierwsza zawiera liczby porządkowe i może zaburzyć mechanizm budowy regresora, drugi zawiera miesiać połówu, który nie powinien mieć znaczenia ze względu na to, że badane są zawsze 3-letnie śledzie (bez tego założenia mierzone mogły być dużo młodsze śledzie, czyli krótsze),
+* zbiór podzielono na podzbiór uczący i testowy w stosunku 7:3,
+* podział na podzbiór uczący i walidacyjny dokonan metodą krzyżowej walidacji z liczbą podziałów 2 oraz liczbą powtórzeń 5,
+* regresor został stworzony metodą random forest o liczbie drzew (ntree) równej 10,
+* ocenę trafności regresji dokonano na podstawie metryk RMSE oraz $R^2$.
 
 ```{r regression}
 reg_df <- new_my_df %>% select(-X,-xmonth)
@@ -441,11 +447,20 @@ rfClasses <- predict(fit, newdata = testing)
 ```
 
 ##Wyniki
+W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę:
+
 ```{r reg_result_print}
-fit
-fit$results
-postResample(pred = rfClasses, obs=testing$length)
+kable(fit$results, caption="Tabela wyników z podzbioru uczącego")
 ```
+
+Wyniki dla zbioru testowego:
+
+```{r req_result_print2}
+res_pred <- postResample(pred = rfClasses, obs=testing$length)
+kable(res_pred[1:2])
+```
+
+##Wykresy przedstawiający wartości rzeczywiste i wartości uzyske z regresji
 
 ```{r reg_plot_pred}
 reg_df_plot <- data.frame(Length = rfClasses)
@@ -453,6 +468,7 @@ reg_df_plot <- data.frame(Length = rfClasses)
 reg_plot <- ggplot(reg_df_plot,aes(x = 1:length(Length), y=Length)) + 
   geom_point(alpha = 0.5, size = 0.7,color="blue") + 
   geom_smooth(aes(y=Length,colour = "trend"), size = 2) +
+  coord_cartesian(ylim = c(19, 31)) +
   theme_minimal() + theme(legend.position = "none") +
   labs(x = "Czas", y = "Długość śledzia ") + 
   ggtitle("Wykres długości śledzia od czasu - predykcja") 
@@ -463,17 +479,19 @@ reg_plot
 reg_plot_test <- ggplot(testing,aes(x = 1:length(length), y=length)) + 
   geom_point(alpha = 0.5, size = 0.7,color="blue") + 
   geom_smooth(aes(y=length,colour = "trend"), size = 2) +
+  coord_cartesian(ylim = c(19, 31)) +
   theme_minimal() + theme(legend.position = "none") +
   labs(x = "Czas", y = "Długość śledzia ") + 
   ggtitle("Wykres długości śledzia od czasu - faktyczne dane") 
 reg_plot_test
+
 ```
 
+
+
 #Ważność atrybutów w oparciu o regresor
-bedzie waznosc TODO
+
 ```{r atrribute_value}
-#varImp(fit)
-kable(head(reg_df))
 kable(tibble::rownames_to_column(varImp(fit)$importance,var="atrybut")%>%arrange(desc(Overall)))
 ```
 
