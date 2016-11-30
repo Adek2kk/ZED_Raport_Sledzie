@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = FALSE,message=FALSE,cache=TRUE)
 
 
 #Wprowadzenie
-Tu będzie krótki opis
+Celem ninjszego raportu była odpowiedź na pytanie co jest główną przyczna spadku długości śledzi oceanicznych. W tym celu przeprowadzono szereg operacji i analiz na zbiorze danych zebrancyh z ostatnich 60 lat. Pierwszym krokiem było wypełnienie brakujacych wartości. Natępnie dokonano analiz dostępnych atrybutów wraz z wykresami przebiegóW czasowych oraz histogramów. Natępnie obliczono korelacje pomiędzy atrybutami. Najwyższe wartości bezwzględne otrzymano dla atrybutami dotyczącymi planktonu. Następnie stworzono regresor liniowy wraz z oceną ważności atrybutów. Na podstawie wszystkich króków stwierdzono, że długość śledzia jest zależna od zagęszczenia planktonu w wodzie. Dla małej wartości zagęszczenia, śledzie osiągają mniejsze długości. Sam planton jest wrażliwy na zmianę poziomu zasolenia oraz temperatury przy powierzchni morza. Wartości dla których zagęszczenie jest wysokie to 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
 
 #Biblioteki
 ```{r library, echo=TRUE,message=FALSE, warnings = FALSE}
@@ -61,7 +61,7 @@ my_df <- tbl_df(df)
 
 #Wstępne rozpoznanie
 ##Ogólne statystyki dla danych
-Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi.
+Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi. Dane zawierają nie całe 53 tysiące wpisów dotyczących śledzie. onieżej zebrano podstawowe statystyki dla zbioru.
 ```{r introduction}
 kable(summary(my_df), caption = "Tabela podsumująca zbiór danych")
 
@@ -447,7 +447,7 @@ rfClasses <- predict(fit, newdata = testing)
 ```
 
 ##Wyniki
-W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę:
+W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę (wybrany został model o mtry=2):
 
 ```{r reg_result_print}
 kable(fit$results, caption="Tabela wyników z podzbioru uczącego")
@@ -490,10 +490,150 @@ reg_plot_test
 
 
 #Ważność atrybutów w oparciu o regresor
-
+W zamieszczeonej poniżej tabeli znalażły się wyniki oceny ważności atrybutów. Mają one pomóc w odpowiedzi na pytanie: dlaczego śledzie oceaniczne w pewnym momencie zaczeły maleć? Z tabeli można wywnioskować że największy wpływ na to mają planktony (w szczególnośći lcop1 i lcop2), zasolenie wody i w mniejszym znaczeniu temperatura przy powierzchni wody. Majać tę wiedzę należy sprawdzić w jaki sposób zmieniały się te atrybuty, by stwierdzić jakie zmiany w nich spowodowały spadek długości śledzia. Ciekawym jest wysoka pozycja poziomu zasolenia, która wykazuje bardzo niską zmienność wartości, a jednak na tyle znaczną, by wpłynąć na długość śledzia.
 ```{r atrribute_value}
-kable(tibble::rownames_to_column(varImp(fit)$importance,var="atrybut")%>%arrange(desc(Overall)))
+kable(tibble::rownames_to_column(varImp(fit)$importance,var="Atrybut")%>%arrange(desc(Overall)), caption = "Tabela z oceną ważnności atrybutów")
 ```
 
+## Zależność długości śledzia od zasolenia
+Wykresy przedstawiają spadek długości śledzia w styuacji, gdy poziom zasolenia zaczyna zmieniać wartość z 35,5 na wyższą lub niższą. Widać tu wyraźną zależność. Trudno jednak jednoznacznie stwierdzić czy dla śledzia, aż tak ważnym czynnikiem może być tak niewielka różnica zasolenia wody. Wydaje się, że zasolenie wody jest przyczyną zmian wartości innego atrybutu, który może być bardziej wyczulony na taką zmianę.
+```{r fin_plot_slen}
+slen_df <- new_my_df %>% select (X,sal,length)
+slen_df2<-melt(slen_df,id.vars='X')
+fin_plot_slen <- ggplot(slen_df2,aes(x = X, y=value)) + 
+  geom_point(size = 0.5, alpha = 0.5, color="grey") +
+  geom_smooth(size = 2) +
+  facet_grid(variable~. ,scales = 'free')  + theme_minimal() + 
+  labs(x = "Czas", y = "Zasolenie / Długość") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy zasolenia oraz długości śledzia od czasu") 
+fin_plot_slen
+```
+
+## Zależność długości śledzia od temparatury
+Na wykresach wyraźnie widać, że w temperaturze powyżej 14 stopni Celsjusza długość śledzia jest mniejsza, niż poniżej tej wartości. Można założyć, że temperatura przy pwoierzchni morza ma wpływ na to jak rozwija się śledź. 
+```{r fin_plot_tlen}
+tlen_df <- new_my_df %>% select (X,sst,length)
+tlen_df2<-melt(tlen_df,id.vars='X')
+fin_plot_tlen <- ggplot(tlen_df2,aes(x = X, y=value)) + 
+  geom_point(size = 0.5, alpha = 0.5, color="grey") +
+  geom_smooth(size = 2) +
+  facet_grid(variable~. ,scales = 'free')  + theme_minimal() + 
+  labs(x = "Czas", y = "Temperatura / Długość") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy temperatury oraz długości śledzia od czasu") 
+fin_plot_tlen
+```
+
+## Zależność długości śledzia od planktonu
+
+Z wykresóW zamieszczonych poniżej można odczytać, że długość śledzia zmniejsza się wraz ze zmniejszaniem się zagęszczenia planktonu - na wykresie widoczne przez odcień czerni dla punktów. Widać to w szczególnościdla cfin2, chel1 oraz obu lcop. Wynika z nich jasno, że mniejsza ilość pożywienia wpływa na długość śledzia oceanicznego. Warto, jednak sprawdzić, co wpływa na zmniejszone zagęszczenie planktonu, dlatego dwa kolejne podpunkty analizy ważności atrybutów będą poświęcone wyróżnionym wyżej czterem planktonom.
+
+```{r fin_plot_lplank}
+plank_df <- new_my_df %>% select (X,length,cfin1:cfin2)
+plank_df2<-melt(plank_df,id.vars=c('X','length'))
+fin_plot_lplank <- ggplot(plank_df2,aes(x = X,y=length)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Długość śledzia") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy długości śledzia od czasu z podziałem na plankton") 
+fin_plot_lplank
+```
+
+```{r fin_plot_lplank2}
+plank_df <- new_my_df %>% select (X,length,chel1:chel2)
+plank_df2<-melt(plank_df,id.vars=c('X','length'))
+fin_plot_lplank <- ggplot(plank_df2,aes(x = X,y=length)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Długość śledzia") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy długości śledzia od czasu z podziałem na plankton") 
+fin_plot_lplank
+```
+
+```{r fin_plot_lplank3}
+plank_df <- new_my_df %>% select (X,length,lcop1:lcop2)
+plank_df2<-melt(plank_df,id.vars=c('X','length'))
+fin_plot_lplank <- ggplot(plank_df2,aes(x = X,y=length)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Długość śledzia") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy długości śledzia od czasu z podziałem na plankton") 
+fin_plot_lplank
+```
+
+
+## Zależność planktonu od zasolenia
+Z wykresow można odczytać że optymalna wartość dla rozwoju planktonu to około 35,50 jednostki. Dla tego poziomu widać wyższe zagęszczenie niż, gdy zasolenie jest powyżej lub poniźej tej wartości. Widać to od 30 tysięcznej jednostki czasu. Takie skoki zasolenia mogły spowodować stowrzenie niekorzystnego środowiska dla planktonu.
+```{r fin_plot_splank1}
+plank_df <- new_my_df %>% select (X,sal,cfin2,chel1)
+plank_df2<-melt(plank_df,id.vars=c('X','sal'))
+fin_plot_splank <- ggplot(plank_df2,aes(x = X,y=sal)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Zasolenie ") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy poziomu zasolenia od czasu z podziałem na plankton") 
+fin_plot_splank
+```
+
+```{r fin_plot_splank2}
+plank_df <- new_my_df %>% select (X,sal,lcop1:lcop2)
+plank_df2<-melt(plank_df,id.vars=c('X','sal'))
+fin_plot_splank <- ggplot(plank_df2,aes(x = X,y=sal)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Zasolenie ") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy poziomu zasolenia od czasu z podziałem na plankton") 
+fin_plot_splank
+```
+
+## Zależność planktonu od temperatury
+Z tych wykresów można się dowiedzieć, że zagęszczenie planktonu jest wyższe dla temperatury 13,5-13,75. Dla temperatury 13,75 widać o wiele mniejsze zagęszczenie planktonu. 
+```{r fin_plot_tplank1}
+plank_df <- new_my_df %>% select (X,sst,cfin2, chel1)
+plank_df2<-melt(plank_df,id.vars=c('X','sst'))
+fin_plot_tplank <- ggplot(plank_df2,aes(x = X,y=sst)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Temperatura ") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy temperatury przy powierzchni wody od czasu z podziałem na plankton") 
+fin_plot_tplank
+```
+
+```{r fin_plot_tplank2}
+plank_df <- new_my_df %>% select (X,sst,lcop1:lcop2)
+plank_df2<-melt(plank_df,id.vars=c('X','sst'))
+fin_plot_tplank <- ggplot(plank_df2,aes(x = X,y=sst)) + 
+  geom_point(aes(color=value)) + 
+  geom_smooth(size = 2, color = "red") +
+  scale_colour_gradient(low = "white", high = "black") +
+  facet_grid(~variable)  + theme_minimal() + 
+  labs(x = "Czas", y = "Temperatura ") + 
+  scale_x_continuous() + 
+  ggtitle("Wykresy temperatury przy powierzchni wody od czasu z podziałem na plankton") 
+fin_plot_tplank
+```
+
+
 #Wnioski
-bedzie podsumowanie TODO
+Zbierając wszystkie informacje z każdego etapu można spróbować odpowiedzieć na pytanie - co jest główną przyczyną spadku długości śledzi oceanicznych? Analityk stwierdza, że jest to spadek zagęszczenia planktonu w morzu co powoduje trudniejszy dostęp śledzia do pożywienia. Na przedstawionych w ostatniej części raportu wykresach widać zależność niskego poziomu planktonu oraz długości śledzi. Jest to przyczna dosyć łatwa do zrozumienia, ponieważ przy braku dostatecznej ilości składników odżywczych organizm ma ograniczone możliwości rozwoju.
+Na podstawie zebranych danych udało się również znaleźć możliwą przycznę spadku zagęszczenia planktonu. Jest to zmiana poziomu zasolenia oraz temperatury, w której może on się rozwijać. Z danych wynika, że optimum (wartości przy których zagęszczenie było najwyższe) to odpowiednio 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
+Na koniec warto dodać, że przeprowadzona analiza jest tylko wstępem do dalszych badań, w których będzie można się sprawdzić prawdziwość wniosków zawartych w tym raporcie na drodze eksperymentów na śledziach oraz planktonie.

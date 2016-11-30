@@ -6,7 +6,7 @@ Adam Chojan
 
 
 #Wprowadzenie
-Tu będzie krótki opis
+Celem ninjszego raportu była odpowiedź na pytanie co jest główną przyczna spadku długości śledzi oceanicznych. W tym celu przeprowadzono szereg operacji i analiz na zbiorze danych zebrancyh z ostatnich 60 lat. Pierwszym krokiem było wypełnienie brakujacych wartości. Natępnie dokonano analiz dostępnych atrybutów wraz z wykresami przebiegóW czasowych oraz histogramów. Natępnie obliczono korelacje pomiędzy atrybutami. Najwyższe wartości bezwzględne otrzymano dla atrybutami dotyczącymi planktonu. Następnie stworzono regresor liniowy wraz z oceną ważności atrybutów. Na podstawie wszystkich króków stwierdzono, że długość śledzia jest zależna od zagęszczenia planktonu w wodzie. Dla małej wartości zagęszczenia, śledzie osiągają mniejsze długości. Sam planton jest wrażliwy na zmianę poziomu zasolenia oraz temperatury przy powierzchni morza. Wartości dla których zagęszczenie jest wysokie to 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
 
 #Biblioteki
 
@@ -51,7 +51,7 @@ my_df <- tbl_df(df)
 
 #Wstępne rozpoznanie
 ##Ogólne statystyki dla danych
-Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi.
+Dane na, których oparto analizy dotyczą połowu śledzi oceanicznych wyławianych w Europie na przestrzeni 60 lat. Dane zostały zebrane podczas połowów komercyjnych. Do badań brano losowo od 50 do 100 sztuk trzyletnich śledzi. Dane zawierają nie całe 53 tysiące wpisów dotyczących śledzie. onieżej zebrano podstawowe statystyki dla zbioru.
 
 Table: Tabela podsumująca zbiór danych
 
@@ -258,7 +258,7 @@ W ramach analizy danych stworzono regresor w celu stowarzenia predykcji rozmiaru
 
 
 ##Wyniki
-W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę:
+W wyniku działań na podzbiorze testowym otrzymano poniższe tabelę (wybrany został model o mtry=2):
 
 
 Table: Tabela wyników z podzbioru uczącego
@@ -286,9 +286,11 @@ Rsquared    0.4840395
 
 
 #Ważność atrybutów w oparciu o regresor
+W zamieszczeonej poniżej tabeli znalażły się wyniki oceny ważności atrybutów. Mają one pomóc w odpowiedzi na pytanie: dlaczego śledzie oceaniczne w pewnym momencie zaczeły maleć? Z tabeli można wywnioskować że największy wpływ na to mają planktony (w szczególnośći lcop1 i lcop2), zasolenie wody i w mniejszym znaczeniu temperatura przy powierzchni wody. Majać tę wiedzę należy sprawdzić w jaki sposób zmieniały się te atrybuty, by stwierdzić jakie zmiany w nich spowodowały spadek długości śledzia. Ciekawym jest wysoka pozycja poziomu zasolenia, która wykazuje bardzo niską zmienność wartości, a jednak na tyle znaczną, by wpłynąć na długość śledzia.
 
+Table: Tabela z oceną ważnności atrybutów
 
-atrybut      Overall
+Atrybut      Overall
 --------  ----------
 lcop1      100.00000
 sal         65.81950
@@ -304,5 +306,39 @@ recr        24.10870
 nao         11.94498
 fbar         0.00000
 
+## Zależność długości śledzia od zasolenia
+Wykresy przedstawiają spadek długości śledzia w styuacji, gdy poziom zasolenia zaczyna zmieniać wartość z 35,5 na wyższą lub niższą. Widać tu wyraźną zależność. Trudno jednak jednoznacznie stwierdzić czy dla śledzia, aż tak ważnym czynnikiem może być tak niewielka różnica zasolenia wody. Wydaje się, że zasolenie wody jest przyczyną zmian wartości innego atrybutu, który może być bardziej wyczulony na taką zmianę.
+![](Raport_sledzie_files/figure-html/fin_plot_slen-1.png)<!-- -->
+
+## Zależność długości śledzia od temparatury
+Na wykresach wyraźnie widać, że w temperaturze powyżej 14 stopni Celsjusza długość śledzia jest mniejsza, niż poniżej tej wartości. Można założyć, że temperatura przy pwoierzchni morza ma wpływ na to jak rozwija się śledź. 
+![](Raport_sledzie_files/figure-html/fin_plot_tlen-1.png)<!-- -->
+
+## Zależność długości śledzia od planktonu
+
+Z wykresóW zamieszczonych poniżej można odczytać, że długość śledzia zmniejsza się wraz ze zmniejszaniem się zagęszczenia planktonu - na wykresie widoczne przez odcień czerni dla punktów. Widać to w szczególnościdla cfin2, chel1 oraz obu lcop. Wynika z nich jasno, że mniejsza ilość pożywienia wpływa na długość śledzia oceanicznego. Warto, jednak sprawdzić, co wpływa na zmniejszone zagęszczenie planktonu, dlatego dwa kolejne podpunkty analizy ważności atrybutów będą poświęcone wyróżnionym wyżej czterem planktonom.
+
+![](Raport_sledzie_files/figure-html/fin_plot_lplank-1.png)<!-- -->
+
+![](Raport_sledzie_files/figure-html/fin_plot_lplank2-1.png)<!-- -->
+
+![](Raport_sledzie_files/figure-html/fin_plot_lplank3-1.png)<!-- -->
+
+
+## Zależność planktonu od zasolenia
+Z wykresow można odczytać że optymalna wartość dla rozwoju planktonu to około 35,50 jednostki. Dla tego poziomu widać wyższe zagęszczenie niż, gdy zasolenie jest powyżej lub poniźej tej wartości. Widać to od 30 tysięcznej jednostki czasu. Takie skoki zasolenia mogły spowodować stowrzenie niekorzystnego środowiska dla planktonu.
+![](Raport_sledzie_files/figure-html/fin_plot_splank1-1.png)<!-- -->
+
+![](Raport_sledzie_files/figure-html/fin_plot_splank2-1.png)<!-- -->
+
+## Zależność planktonu od temperatury
+Z tych wykresów można się dowiedzieć, że zagęszczenie planktonu jest wyższe dla temperatury 13,5-13,75. Dla temperatury 13,75 widać o wiele mniejsze zagęszczenie planktonu. 
+![](Raport_sledzie_files/figure-html/fin_plot_tplank1-1.png)<!-- -->
+
+![](Raport_sledzie_files/figure-html/fin_plot_tplank2-1.png)<!-- -->
+
+
 #Wnioski
-bedzie podsumowanie TODO
+Zbierając wszystkie informacje z każdego etapu można spróbować odpowiedzieć na pytanie - co jest główną przyczyną spadku długości śledzi oceanicznych? Analityk stwierdza, że jest to spadek zagęszczenia planktonu w morzu co powoduje trudniejszy dostęp śledzia do pożywienia. Na przedstawionych w ostatniej części raportu wykresach widać zależność niskego poziomu planktonu oraz długości śledzi. Jest to przyczna dosyć łatwa do zrozumienia, ponieważ przy braku dostatecznej ilości składników odżywczych organizm ma ograniczone możliwości rozwoju.
+Na podstawie zebranych danych udało się również znaleźć możliwą przycznę spadku zagęszczenia planktonu. Jest to zmiana poziomu zasolenia oraz temperatury, w której może on się rozwijać. Z danych wynika, że optimum (wartości przy których zagęszczenie było najwyższe) to odpowiednio 35,5 Knudsen ppt oraz 13,5-13,75 stopni Celsjusza.
+Na koniec warto dodać, że przeprowadzona analiza jest tylko wstępem do dalszych badań, w których będzie można się sprawdzić prawdziwość wniosków zawartych w tym raporcie na drodze eksperymentów na śledziach oraz planktonie.
